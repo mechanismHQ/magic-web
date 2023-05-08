@@ -52,6 +52,7 @@ export const useTx = <Ok, Err>(builder: TxBuilder<Ok, Err>, opts: UseTxOptions =
         _tx,
         {
           ...opts,
+          appDetails: opts.appDetails!,
           privateKey,
         },
         {

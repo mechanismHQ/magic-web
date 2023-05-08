@@ -1,14 +1,9 @@
-import { WebProvider } from '@clarigen/web';
-import { network, NETWORK_CONFIG } from './constants';
+import { NETWORK_CONFIG } from './constants';
 import { DEPLOYMENT_NETWORKS } from '@clarigen/core';
 import { projectFactory } from '@clarigen/core';
 import { createAssetInfo } from 'micro-stacks/transactions';
 import { splitContractId } from './utils';
 import { project } from './clarigen/next';
-
-export const webProvider = () => {
-  return WebProvider({ network });
-};
 
 function getDeploymentNetwork() {
   const key = NETWORK_CONFIG;
@@ -22,11 +17,11 @@ function getDeploymentNetwork() {
 }
 
 export function getContracts() {
-  return projectFactory(project, getDeploymentNetwork());
+  return projectFactory(project, getDeploymentNetwork() as unknown as 'devnet');
 }
 
 export function bridgeContract() {
-  return getContracts().bridge;
+  return getContracts().magic;
 }
 
 export function bridgeAddress() {
@@ -34,7 +29,7 @@ export function bridgeAddress() {
 }
 
 export type Contracts = ReturnType<typeof getContracts>;
-export type BridgeContract = Contracts['bridge'];
+export type BridgeContract = Contracts['magic'];
 
 export function xbtcAssetInfo() {
   const contract = getContracts().wrappedBitcoin;

@@ -1,15 +1,5 @@
-import type { NodeOptions } from '@clarigen/node';
-import { NodeProvider } from '@clarigen/node';
 import { privateKeyToStxAddress, StacksNetworkVersion } from 'micro-stacks/crypto';
 import { network } from './constants';
-
-export const clarigenNodeConfig: NodeOptions = {
-  network,
-};
-
-export function nodeContracts() {
-  return NodeProvider(clarigenNodeConfig);
-}
 
 export function sponsorAddress(privateKey: string) {
   const addressVersion = network.isMainnet()

@@ -1,5 +1,4 @@
 import { fetch } from 'cross-fetch';
-import { NodeProvider } from '@clarigen/node';
 import { publicKeys } from '../test/mocks';
 import { hashSha256 } from 'micro-stacks/crypto-sha';
 import { hexToBytes } from 'micro-stacks/common';
@@ -38,14 +37,15 @@ export function setupScript(senderKey: string) {
     network,
   };
 
-  const provider = NodeProvider(clarigenConfig);
+  // const provider = NodeProvider(clarigenConfig);
 
   return {
     contracts,
-    bridge: contracts.bridge,
+    bridge: contracts.magic,
+    magic: contracts.magic,
     clarityBitcoin: contracts.clarityBitcoin,
     network,
-    provider,
+    // provider,
   };
 }
 

@@ -11,9 +11,7 @@ import type { BridgeContract } from '../common/contracts';
 import { getOutboundAddress } from '../common/utils';
 import { OPERATOR_KEY, setupScript } from './helpers';
 import { bytesToHex } from 'micro-stacks/common';
-import { base58checkEncode } from 'micro-stacks/crypto';
-import { address as bAddress } from 'bitcoinjs-lib';
-import { btcNetwork } from '../common/constants';
+import { webProvider } from '../common/constants';
 
 const network = new StacksTestnet();
 
@@ -34,7 +32,7 @@ async function run() {
     url: network.getCoreApiUrl(),
   })) as ContractCallTransaction;
 
-  const { provider, bridge, contracts } = setupScript(OPERATOR_KEY);
+  const { magic, contracts } = setupScript(OPERATOR_KEY);
   const clarityBtc = contracts.clarityBitcoin;
 
   const swapId = cvToValue<number>(hexToCV<UIntCV>(tx.tx_result.hex));
@@ -45,24 +43,21 @@ async function run() {
     return cvToValue(cv);
   }) as InitArgs;
 
-  const [amount, version, hash, operator] = nativeArgs;
+  const [amount, output, operator] = nativeArgs;
 
-  console.log('version', bytesToHex(version));
-  console.log('hash', bytesToHex(hash));
+  // console.log('version', bytesToHex(version));
+  console.log('output', bytesToHex(output));
 
-  const address = getOutboundAddress(hash, version);
+  const address = getOutboundAddress(output);
 
-  const _address = base58checkEncode(hash, 111);
-  console.log('_address', _address);
-
-  const contractScriptHash = await provider.ro(bridge.generateP2pkhOutput(hash));
-  console.log(bAddress.fromOutputScript(Buffer.from(contractScriptHash), btcNetwork));
+  // const contractScriptHash = await provider.ro(bridge.generateP2pkhOutput(hash));
+  // console.log(bAddress.fromOutputScript(Buffer.from(contractScriptHash), btcNetwork));
 
   console.log('address', address);
 
   console.log('swapId', swapId);
 
-  const finalizeTxid = await provider.ro(bridge.getCompletedOutboundSwapTxid(swapId));
+  const finalizeTxid = await webProvider.ro(magic.getCompletedOutboundSwapTxid(swapId));
 
   if (finalizeTxid) {
     const txid = bytesToHex(finalizeTxid);

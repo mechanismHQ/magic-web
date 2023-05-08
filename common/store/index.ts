@@ -34,7 +34,7 @@ export enum QueryKeys {
 }
 
 export async function fetchSupplierWithContract(id: number) {
-  const { bridge } = getContracts();
+  const { magic: bridge } = getContracts();
   const [supplier, funds] = await Promise.all([
     webProvider.ro(bridge.getSupplier(id)),
     webProvider.ro(bridge.getFunds(id)),
@@ -74,14 +74,8 @@ export async function fetchAllSuppliersApi() {
   return data.suppliers;
 }
 
-export async function fetchSwapperId(address: string) {
-  try {
-    const _id = await webProvider.ro(bridgeContract().getSwapperId(address));
-    return _id === null ? null : Number(_id);
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
+export async function fetchSwapperId(_address: string) {
+  return Promise.reject(new Error('Swapper ID removed'));
 }
 
 export async function fetchInboundSwap(txid: string) {

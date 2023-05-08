@@ -7,11 +7,14 @@ import {
   StacksMocknet,
   StacksTestnet,
 } from 'micro-stacks/network';
+import { ClarigenClient } from '@clarigen/core';
 import { networks } from 'bitcoinjs-lib';
-import { WebProvider } from '@clarigen/web';
+import type { BTCNetwork } from 'magic-protocol';
+import { NETWORK, TEST_NETWORK } from 'magic-protocol';
 
 export let network: StacksNetwork;
 export let btcNetwork: networks.Network;
+export let scureBtcNetwork: BTCNetwork;
 
 export const NETWORK_CONFIG = process.env.NEXT_PUBLIC_NETWORK || 'mocknet';
 if (NETWORK_CONFIG === 'mainnet') {
@@ -19,16 +22,19 @@ if (NETWORK_CONFIG === 'mainnet') {
     url: process.env.NEXT_PUBLIC_CORE_URL || HIRO_MAINNET_DEFAULT,
   });
   btcNetwork = networks.bitcoin;
+  scureBtcNetwork = NETWORK;
 } else if (NETWORK_CONFIG === 'testnet') {
   network = new StacksTestnet({
     url: process.env.NEXT_PUBLIC_CORE_URL || HIRO_TESTNET_DEFAULT,
   });
   btcNetwork = networks.testnet;
+  scureBtcNetwork = TEST_NETWORK;
 } else {
   network = new StacksMocknet({
     url: process.env.NEXT_PUBLIC_CORE_URL || HIRO_MOCKNET_DEFAULT,
   });
   btcNetwork = networks.regtest;
+  scureBtcNetwork = TEST_NETWORK;
 }
 
 export const coreUrl = network.getCoreApiUrl();
@@ -46,7 +52,7 @@ function getLocalUrl() {
 
 export const LOCAL_URL = getLocalUrl();
 
-export const webProvider = WebProvider({ network });
+export const webProvider = new ClarigenClient(network);
 
 export const DEFAULT_APP_NAME = 'Magic Bridge' as const;
 

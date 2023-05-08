@@ -13,9 +13,9 @@ clarinet = "./Clarinet.toml"
 # `output` can be a directory or a folder.
 output = "common/clarigen/next.ts"
 include_accounts = true
-after = "yarn prettier -w common/clarigen/next.ts"
+after = "pnpm prettier -w common/clarigen/next.ts"
 
 # `esm.after` - script to run after ESM types are generated.
 # examples:
-# after = "yarn prettier ./esm/index.ts"
+# after = "pnpm prettier ./esm/index.ts"
 # after = "echo 'yay'"

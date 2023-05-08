@@ -10,8 +10,8 @@ The main contract for Magic is [./contracts/bridge.clar](`bridge.clar`), where a
 
 ## Development setup
 
-First, install dependencies by running `yarn`.
+First, install dependencies by running `pnpm`.
 
 Copy the `.env.example` file to `.env.local`. The example configuration will work for public testnet configurations.
 
-Finally, run the app with `yarn dev`. The app will be available at [localhost:4444](http://localhost:4444).
+Finally, run the app with `pnpm dev`. The app will be available at [localhost:4444](http://localhost:4444).

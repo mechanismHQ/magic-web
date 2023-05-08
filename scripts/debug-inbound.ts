@@ -1,16 +1,16 @@
 import type { TypedAbiArg, TypedAbiFunction } from '@clarigen/core';
 import { cvToValue } from '@clarigen/core';
 import type { ContractCallTransaction } from '@stacks/stacks-blockchain-api-types';
-import { address as bAddress } from 'bitcoinjs-lib';
 import 'cross-fetch/polyfill';
 import { fetchTransaction } from 'micro-stacks/api';
 import { hexToCV } from 'micro-stacks/clarity';
 import { bytesToHex } from 'micro-stacks/common';
 import { getTxData } from '../common/api/electrum';
 import type { BridgeContract } from '../common/contracts';
-import { btcNetwork, network } from '../common/constants';
+import { network, webProvider } from '../common/constants';
 import { getBtcTxUrl } from '../common/utils';
 import { OPERATOR_KEY, setupScript } from './helpers';
+import { outputToAddress } from 'magic-protocol';
 // import { StacksTestnet } from 'micro-stacks/network';
 
 type EscrowFn = BridgeContract['functions']['escrowSwap'];
@@ -34,7 +34,7 @@ async function run() {
 
   // if (tx.tx_status === 'pending') throw new Error('Not confirmed');
 
-  const { provider, bridge, contracts } = setupScript(OPERATOR_KEY);
+  const { magic: bridge, contracts } = setupScript(OPERATOR_KEY);
   const clarityBtc = contracts.clarityBitcoin;
 
   const args = tx.contract_call.function_args!;
@@ -55,23 +55,31 @@ async function run() {
     recipient,
     expirationBuff,
     hash,
-    swapperBuff,
-    operatorId,
+    swapperAddr,
+    minAmount,
   ] = nativeArgs;
 
-  const txId = bytesToHex(await provider.ro(clarityBtc.getTxid(txHex)));
+  const txId = bytesToHex(await webProvider.ro(clarityBtc.getTxid(txHex)));
   console.log('txId:', txId);
   const url = getBtcTxUrl(txId);
   console.log('tx:', url);
 
-  // correct output?
-  const scriptHash = await provider.ro(
-    bridge.generateHtlcScriptHash(sender, recipient, expirationBuff, hash, swapperBuff)
+  const metadata = await webProvider.ro(
+    bridge.hashMetadata({
+      swapper: swapperAddr,
+      minAmount: minAmount,
+    })
   );
-  console.log('scriptHash', bytesToHex(scriptHash));
 
-  const contractAddress = bAddress.fromOutputScript(Buffer.from(scriptHash), btcNetwork);
-  console.log('address', contractAddress);
+  // correct output?
+  const scriptHash = await webProvider.ro(
+    bridge.generateHtlcScriptV2(sender, recipient, expirationBuff, hash, metadata)
+  );
+  // console.log('scriptHash', bytesToHex(scriptHash));
+
+  const contractAddress = outputToAddress(scriptHash);
+  // const contractAddress = bAddress.fromOutputScript(Buffer.from(scriptHash), btcNetwork);
+  // console.log('address', contractAddress);
 
   const txData = await getTxData(txId, contractAddress);
 

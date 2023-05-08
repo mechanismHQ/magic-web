@@ -6,6 +6,7 @@ import { coreUrl, btcNetwork, NETWORK_CONFIG } from './constants';
 import { hashSha256 } from 'micro-stacks/crypto-sha';
 import { base58checkEncode, hashRipemd160 } from 'micro-stacks/crypto';
 import type { Supplier } from './store';
+import { outputToAddress } from 'magic-protocol';
 
 export function getTxUrl(txId: string) {
   const id = getTxId(txId);
@@ -149,7 +150,11 @@ export function getOutboundPayment(hash: Uint8Array, versionBytes: Uint8Array) {
   }
 }
 
-export function getOutboundAddress(hash: Uint8Array, versionBytes: Uint8Array) {
+export function getOutboundAddress(output: Uint8Array) {
+  return outputToAddress(output, btcNetwork);
+}
+
+export function _getOutboundAddress(hash: Uint8Array, versionBytes: Uint8Array) {
   const { address } = getOutboundPayment(hash, versionBytes);
   if (!address) throw new Error('Invalid BTC payment');
   return address;

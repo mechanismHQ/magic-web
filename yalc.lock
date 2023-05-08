@@ -59,6 +59,11 @@
       "signature": "fa2c005368f3aef1280def7d6158eaa1",
       "file": true,
       "replaced": "1.0.0-next.24"
+    },
+    "magic-protocol": {
+      "signature": "b34e745dad91d66b20749071c0cdf41a",
+      "file": true,
+      "replaced": "^2.0.0"
     }
   }
 }

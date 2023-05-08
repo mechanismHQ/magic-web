@@ -19,14 +19,14 @@
     "gen:deployments": "deno run --allow-read --allow-write https://deno.land/x/clarigen@v0.2.4/cli/gen-deployments.ts",
     "move-types": "cp -f -r artifacts/clarigen/ common/clarigen && rm -rf artifacts",
     "fmt-types": "prettier -w \"artifacts/clarigen/**/*.ts\"",
-    "gen": "yarn gen:deployments && yarn gen:types && yarn fmt-types && yarn move-types"
+    "gen": "pnpm gen:deployments && pnpm gen:types && pnpm fmt-types && pnpm move-types"
   },
   "dependencies": {
-    "@clarigen/core": "1.0.0-next.30",
+    "@clarigen/core": "1.0.14",
     "@clarigen/native-bin": "1.0.0-next.27",
-    "@clarigen/node": "1.0.0-next.27",
+    "@clarigen/node": "1.0.14",
     "@clarigen/test": "1.0.0-next.27",
-    "@clarigen/web": "1.0.0-next.27",
+    "@clarigen/web": "1.0.14",
     "@mempool/mempool.js": "^2.2.4",
     "@micro-stacks/nextjs": "0.1.1",
     "@micro-stacks/query": "0.1.1",
@@ -34,6 +34,7 @@
     "@modulz/design-system": "^0.6.1",
     "@nelson-ui/core": "latest",
     "@nelson-ui/react": "latest",
+    "@nelson-ui/theme": "0.1.7",
     "@radix-ui/react-switch": "0.1.1",
     "@sinclair/typebox": "^0.20.5",
     "@stacks/blockchain-api-client": "^0.71.2",
@@ -57,6 +58,7 @@
     "jotai-query-toolkit": "0.1.23",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
+    "magic-protocol": "file:.yalc/magic-protocol",
     "micro-stacks": "0.2.4",
     "modern-normalize": "^1.1.0",
     "next": "12.1.0",
@@ -108,7 +110,7 @@
     "jest": "^27.0.3",
     "localtunnel": "^2.0.2",
     "prettier": "2.4.1",
-    "typescript": "4.5.1-rc"
+    "typescript": "5.0.4"
   },
   "resolutions": {
     "jotai": "1.7.3",

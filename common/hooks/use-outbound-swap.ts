@@ -42,7 +42,7 @@ export function useOutboundSwap(_txId?: string) {
 
   const btcAddress = useMemo(() => {
     if (!swap) return '';
-    return getOutboundAddress(swap.hash, swap.version);
+    return getOutboundAddress(swap.output);
   }, [swap]);
   const [unspentApiResponse] = useListUnspent(btcAddress);
   const unspent = useMemo(() => {

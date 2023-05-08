@@ -9,7 +9,7 @@ type ResponseType<T> = T extends TypedAbiFunction<TypedAbiArg<unknown, string>[]
   ? R
   : never;
 
-type BridgeFunctions = typeof contracts['bridge']['functions'];
+type BridgeFunctions = typeof contracts['magic']['functions'];
 
 type InboundSwapResponse = NonNullable<ResponseType<BridgeFunctions['getInboundSwap']>>;
 
@@ -130,7 +130,7 @@ export function getPrintDescription(print: Print) {
     case 'initiate-outbound':
       return `${satsToBtc(print.xbtc)} xBTC ${'\u279E'} ${satsToBtc(print.sats)} BTC`;
     case 'finalize-outbound':
-      return `${satsToBtc(print.sats)} BTC to ${getOutboundAddress(print.hash, print.version)}`;
+      return `${satsToBtc(print.sats)} BTC to ${getOutboundAddress(print.output)}`;
     case 'escrow':
       return `${satsToBtc(print.sats)} BTC ${'\u279E'} ${satsToBtc(print.xbtc)} xBTC`;
     case 'finalize-inbound':
