@@ -1,16 +1,11 @@
-import { script, payments } from 'bitcoinjs-lib';
+import { script } from 'bitcoinjs-lib';
 import type { IntegerType } from 'micro-stacks/common';
-import { bytesToHex, intToHexString, hexToBytes, utf8ToBytes } from 'micro-stacks/common';
+import { intToHexString, hexToBytes, utf8ToBytes } from 'micro-stacks/common';
 import { hashSha256 } from 'micro-stacks/crypto-sha';
-import { btcNetwork } from './constants';
-
-export interface HTLC {
-  hash: Uint8Array;
-  senderPublicKey: Uint8Array;
-  recipientPublicKey: Uint8Array;
-  expiration?: number;
-  swapper: IntegerType;
-}
+export type { HTLC } from 'magic-protocol';
+import type { HTLC } from 'magic-protocol';
+import { createHtlcScript, encodeHtlcOutput } from 'magic-protocol';
+import { getOutboundAddress } from './utils';
 
 export type BufferType = Buffer | Uint8Array;
 
@@ -32,40 +27,14 @@ export const CSV_DELAY = 500;
 export const CSV_DELAY_BUFF = script.number.encode(CSV_DELAY);
 export const CSV_DELAY_HEX = CSV_DELAY_BUFF.toString('hex');
 
-export function encodeExpiration(expiration?: number): Buffer {
-  return typeof expiration === 'undefined' ? CSV_DELAY_BUFF : script.number.encode(expiration);
-}
-
-export function htlcASM({ hash, senderPublicKey, recipientPublicKey, expiration, swapper }: HTLC) {
-  const swapperHex = numberToLE(swapper);
-  return `
-  ${swapperHex} OP_DROP
-	OP_IF
-    OP_SHA256 ${bytesToHex(hash)}
-    OP_EQUALVERIFY
-		${bytesToHex(recipientPublicKey)}
-	OP_ELSE
-		${encodeExpiration(expiration).toString('hex')}
-		OP_CHECKSEQUENCEVERIFY
-		OP_DROP
-		${bytesToHex(senderPublicKey)}
-	OP_ENDIF
-	OP_CHECKSIG`
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 export function generateHTLCScript(htlc: HTLC) {
-  const asm = htlcASM(htlc);
-  const output = script.fromASM(asm);
-  return output;
+  return createHtlcScript(htlc);
 }
 
 export function generateHTLCAddress(htlc: HTLC) {
-  const network = btcNetwork;
   const script = generateHTLCScript(htlc);
-  const payment = payments.p2sh({ redeem: { output: script, network }, network });
-  return payment;
+  const output = encodeHtlcOutput(script);
+  return getOutboundAddress(output);
 }
 
 export function reverseBuffer(buffer: BufferType): Uint8Array {

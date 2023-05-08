@@ -1,7 +1,7 @@
 import { primaryGaiaHubConfigAtom, stacksSessionAtom } from '@micro-stacks/react';
 import { atom, useAtom } from 'jotai';
 import { atomFamilyWithQuery, useQueryAtom } from 'jotai-query-toolkit';
-import { bytesToHex, hexToBytes } from 'micro-stacks/common';
+import { bytesToHex, hexToBytes, intToBigInt } from 'micro-stacks/common';
 import { getRandomBytes } from 'micro-stacks/crypto';
 import { hashSha256 } from 'micro-stacks/crypto-sha';
 import { getFile } from 'micro-stacks/storage';
@@ -14,6 +14,7 @@ import type { TransactionStatus } from '../api/stacks';
 import { stxTxResultState } from './api';
 import { waitForAll } from 'jotai/utils';
 import { APP_VERSION, NETWORK_CONFIG } from '../constants';
+import { generateMetadataHash } from 'magic-protocol';
 
 export const swapIdState = atom<string | undefined>(undefined);
 
@@ -24,16 +25,17 @@ export function useSwapId() {
 export interface InboundSwapStarted {
   id: string;
   supplier: Supplier;
+  swapper: string;
   createdAt: number;
   secret: string;
   expiration: number;
   publicKey: string;
   inputAmount: string;
+  minAmount: string;
 }
 
 export interface InboundSwapReady extends InboundSwapStarted {
   address: string;
-  swapperId: number;
 }
 
 export interface InboundSwapWarned extends InboundSwapReady {
@@ -94,17 +96,19 @@ export function createId() {
 
 export function createInboundSwap({
   supplier: supplier,
-  swapperId,
+  swapper,
   publicKey,
   inputAmount,
   expiration = 500,
+  minAmount,
 }: {
   supplier: Supplier;
-  swapperId?: number;
+  swapper: string;
   publicKey: string;
   inputAmount: string;
   expiration?: number;
-}): InboundSwapStarted | InboundSwapReady {
+  minAmount: string;
+}): InboundSwapReady {
   const secret = getRandomBytes(32);
   const swap = {
     id: createId(),
@@ -114,27 +118,33 @@ export function createInboundSwap({
     publicKey,
     inputAmount,
     expiration,
+    minAmount,
+    swapper,
   };
-  if (swapperId !== undefined) {
-    return createReadySwap(swap, swapperId);
-  }
-  return swap;
+  // if (swapperId !== undefined) {
+  //   return createReadySwap(swap, swapperId);
+  // }
+  // return swap;
+  return createReadySwap(swap);
 }
 
-export function createReadySwap(swap: InboundSwapStarted, swapperId: number): InboundSwapReady {
+export function createReadySwap(swap: InboundSwapStarted): InboundSwapReady {
   const { secret, publicKey, supplier } = swap;
   const hash = hashSha256(hexToBytes(secret));
-  const payment = generateHTLCAddress({
+  const metadata = generateMetadataHash({
+    swapperAddress: swap.swapper,
+    minAmount: intToBigInt(swap.minAmount),
+  });
+  const address = generateHTLCAddress({
     senderPublicKey: Buffer.from(publicKey, 'hex'),
     recipientPublicKey: Buffer.from(supplier.publicKey, 'hex'),
-    swapper: swapperId,
+    metadata,
     hash: Buffer.from(hash),
-    expiration: swap.expiration,
+    expiration: BigInt(swap.expiration),
   });
   return {
     ...swap,
-    address: payment.address!,
-    swapperId,
+    address,
   };
 }
 

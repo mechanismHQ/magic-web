@@ -61,7 +61,7 @@
       "replaced": "1.0.0-next.24"
     },
     "magic-protocol": {
-      "signature": "b34e745dad91d66b20749071c0cdf41a",
+      "signature": "12ba4d2bc263bdd847e8a20690cf00cc",
       "file": true,
       "replaced": "^2.0.0"
     }

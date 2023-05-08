@@ -3,8 +3,10 @@ import { useAtomCallback } from 'jotai/utils';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import type { Supplier } from '../store';
-import { publicKeyState, swapperIdState } from '../store';
+import { currentStxAddressState } from '../store';
+import { publicKeyState } from '../store';
 import { createInboundSwap, inboundSwapKey } from '../store/swaps';
+import { intToBigInt } from 'micro-stacks/common';
 
 interface Generate {
   supplier: Supplier;
@@ -19,18 +21,22 @@ export function useGenerateInboundSwap() {
   const generate = useAtomCallback(
     useCallback(
       async (get, set, { supplier, inputAmount }: Generate) => {
-        const swapperId = get(swapperIdState);
+        const stxAddress = get(currentStxAddressState);
         const publicKey = get(publicKeyState);
         if (!publicKey) throw new Error('Invalid user state');
         const expiration = testQuery === 'error' ? 10 : undefined;
         if (typeof expiration === 'number') {
           console.debug('Setting invalid expiration of', expiration);
         }
+        const amountWithFeeRate =
+          (intToBigInt(inputAmount) * (10000n - intToBigInt(supplier.inboundFee))) / 10000n;
+        const minToReceive = amountWithFeeRate - BigInt(supplier.inboundBaseFee);
         const swap = createInboundSwap({
           supplier,
           publicKey,
           inputAmount,
-          swapperId: swapperId === null ? undefined : swapperId,
+          swapper: stxAddress!,
+          minAmount: minToReceive.toString(10),
           expiration,
         });
         console.debug('Generated swap:', swap);

@@ -19,7 +19,7 @@ export const useFinalizeInbound = ({ txid, preimage, xbtc }: FinalizeSwap) => {
     // if (!swap) throw new Error('Missing swap');
     const txBuff = Buffer.from(txid, 'hex');
     const preimageBuff = Buffer.from(hexToBytes(preimage));
-    const tx = contracts.bridge.finalizeSwap(txBuff, preimageBuff);
+    const tx = contracts.magic.finalizeSwap(txBuff, preimageBuff);
 
     const postCondition = makeContractFungiblePostCondition(
       bridgeAddress(),

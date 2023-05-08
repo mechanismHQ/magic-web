@@ -16,7 +16,7 @@ export function useRevokeOutbound(swapId: bigint | null, xbtc?: bigint) {
     if (typeof swapId !== 'bigint' || typeof xbtc !== 'bigint') {
       throw new Error('Cannot revoke outbound - no swap.');
     }
-    const tx = contracts.bridge.revokeExpiredOutbound(swapId);
+    const tx = contracts.magic.revokeExpiredOutbound(swapId);
     const postCondition = makeContractFungiblePostCondition(
       bridgeAddress(),
       'bridge',

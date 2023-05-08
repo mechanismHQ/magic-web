@@ -2,16 +2,10 @@
 import 'cross-fetch/polyfill';
 import { TestProvider } from '@clarigen/test';
 import { publicKeys } from './mocks';
-import {
-  generateHTLCAddress,
-  generateHTLCScript,
-  htlcASM,
-  numberToLE,
-  reverseBuffer,
-} from '../common/htlc';
+import { generateHTLCAddress, generateHTLCScript, numberToLE, reverseBuffer } from '../common/htlc';
 import { script as bScript, networks, payments } from 'bitcoinjs-lib';
 import { base58checkDecode, ripemd160 } from 'micro-stacks/crypto';
-import { bytesToHex, hexToBytes, numberToHex } from 'micro-stacks/common';
+import { bytesToHex, hexToBytes } from 'micro-stacks/common';
 import { hashSha256 } from 'micro-stacks/crypto-sha';
 import { expectBuffers, makeTxHex } from './helpers';
 import { getTxHex } from '../common/api/electrum';
@@ -127,44 +121,44 @@ test('can make correct scriptHash in clarity', async () => {
   expectBuffers(scriptHash, payment.output!);
 });
 
-test.skip('playing with asm', () => {
-  const preImage = hexToBytes('aaaa');
-  const hash = hashSha256(preImage);
-  // console.log('op', numberToHex(78));
-  // const preImage = Uint8Array.from(Buffer.from('aaaa', 'hex'));
-  const htlc = {
-    senderPublicKey: sender,
-    recipientPublicKey: recipient,
-    hash: Buffer.from(hash),
-    swapper: 1,
-  };
-  // console.log('block', numberToHex(707969));
-  // const payment = generateHTLCAddress(htlc, networks.bitcoin);
-  const script = generateHTLCScript(htlc);
-  // const asm = bScript.toASM(script);
-  const asm = htlcASM(htlc);
-  console.log(asm);
-  console.log(script.toString('hex'));
-  const decompiled = bScript.decompile(script);
-  // console.log('decompiled', decompiled);
+// test.skip('playing with asm', () => {
+//   const preImage = hexToBytes('aaaa');
+//   const hash = hashSha256(preImage);
+//   // console.log('op', numberToHex(78));
+//   // const preImage = Uint8Array.from(Buffer.from('aaaa', 'hex'));
+//   const htlc = {
+//     senderPublicKey: sender,
+//     recipientPublicKey: recipient,
+//     hash: Buffer.from(hash),
+//     swapper: 1,
+//   };
+//   // console.log('block', numberToHex(707969));
+//   // const payment = generateHTLCAddress(htlc, networks.bitcoin);
+//   const script = generateHTLCScript(htlc);
+//   // const asm = bScript.toASM(script);
+//   const asm = htlcASM(htlc);
+//   console.log(asm);
+//   console.log(script.toString('hex'));
+//   const decompiled = bScript.decompile(script);
+//   // console.log('decompiled', decompiled);
 
-  const chunks = bScript.decompile(script);
-  let buff = '';
-  const parts: string[] = [];
-  chunks!.forEach(chunk => {
-    if (typeof chunk === 'number') {
-      // console.log(chunk, numberToHex(chunk));
-      buff += numberToHex(chunk);
-    } else {
-      parts.push(buff);
-      // console.log(buff);
-      parts.push(chunk.toString('hex'));
-      // console.log(chunk.toString('hex'));
-      buff = '';
-    }
-  });
-  console.log(parts);
-});
+//   const chunks = bScript.decompile(script);
+//   let buff = '';
+//   const parts: string[] = [];
+//   chunks!.forEach(chunk => {
+//     if (typeof chunk === 'number') {
+//       // console.log(chunk, numberToHex(chunk));
+//       buff += numberToHex(chunk);
+//     } else {
+//       parts.push(buff);
+//       // console.log(buff);
+//       parts.push(chunk.toString('hex'));
+//       // console.log(chunk.toString('hex'));
+//       buff = '';
+//     }
+//   });
+//   console.log(parts);
+// });
 
 test('can generate LE hex', () => {
   const num = 16711680;

@@ -2,14 +2,19 @@ import { useCallback, useState } from 'react';
 import { ECPair, payments, Psbt, script as bScript } from 'bitcoinjs-lib';
 import { hexToBytes } from 'micro-stacks/common';
 import { hashSha256 } from 'micro-stacks/crypto-sha';
-import { generateHTLCAddress } from '../htlc';
 import { broadcastBtc } from '../api';
 import { useAtomValue } from 'jotai/utils';
 import { stacksSessionAtom } from '@micro-stacks/react';
 import { btcNetwork } from '../constants';
-import { btcAddressState, publicKeyState } from '../store';
+import {
+  btcAddressState,
+  currentStxAddressState,
+  fetchInboundSwap,
+  publicKeyState,
+} from '../store';
 import { useInboundSwap } from './use-inbound-swap';
 import { useBtcTx } from '../store/api';
+import { createHtlcScript, generateMetadataHash } from 'magic-protocol';
 
 export function useRecoverSwap() {
   const { swap, updateSwap } = useInboundSwap();
@@ -17,6 +22,7 @@ export function useRecoverSwap() {
   const [btcTx] = useBtcTx(swap.btcTxid, swap.address);
 
   const btcAddress = useAtomValue(btcAddressState);
+  const stxAddress = useAtomValue(currentStxAddressState);
   const session = useAtomValue(stacksSessionAtom);
   const publicKey = useAtomValue(publicKeyState);
   const [txid, setTxid] = useState('');
@@ -27,12 +33,22 @@ export function useRecoverSwap() {
     }
     const signer = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'), { network: btcNetwork });
     const hash = hashSha256(hexToBytes(swap.secret));
-    const htlc = generateHTLCAddress({
-      expiration: swap.expiration,
+    const inbound = await fetchInboundSwap(swap.btcTxid);
+    if (!inbound) {
+      throw new Error('Invalid inbound amount');
+    }
+    // TODO: get the correct metadata hash
+    const metadata = generateMetadataHash({
+      swapperAddress: stxAddress!,
+      minAmount: inbound.xbtc,
+    });
+    const htlc = createHtlcScript({
+      expiration: BigInt(swap.expiration),
       senderPublicKey: hexToBytes(publicKey),
       recipientPublicKey: hexToBytes(swap.supplier.publicKey),
       hash,
-      swapper: swap.swapperId,
+      metadata,
+      // swapper: swap.swapperId,
     });
 
     const psbt = new Psbt({ network: btcNetwork });
@@ -46,7 +62,7 @@ export function useRecoverSwap() {
       hash: swap.btcTxid,
       index: btcTx.outputIndex,
       nonWitnessUtxo: Buffer.from(btcTx.txHex),
-      redeemScript: htlc.redeem!.output,
+      redeemScript: Buffer.from(htlc),
       sequence: swap.expiration,
     });
 
@@ -81,7 +97,7 @@ export function useRecoverSwap() {
       ...swap,
       recoveryTxid: broadcastId,
     });
-  }, [swap, btcTx, privateKey, btcAddress, publicKey, updateSwap]);
+  }, [swap, btcTx, privateKey, btcAddress, publicKey, updateSwap, stxAddress]);
 
   return {
     submit,

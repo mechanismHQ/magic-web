@@ -1,5 +1,4 @@
 import { atom, useAtom } from 'jotai';
-import { numberToHex } from 'micro-stacks/common';
 import {
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
@@ -10,6 +9,8 @@ import { btcToSats, parseBtcAddress } from '../../utils';
 import { useStxAddress } from '../use-stx-address';
 import { useTx } from '../use-tx';
 import { outboundTxidState } from '../../store/swap-form';
+import { Address, OutScript } from '@scure/btc-signer';
+import { scureBtcNetwork } from '../../constants';
 
 interface OutboundTx {
   supplierId?: number;
@@ -30,15 +31,10 @@ export const useInitiateOutbound = ({ supplierId, address, amount }: OutboundTx)
       if (!address || supplierId === undefined || !amount || !sender) {
         throw new Error('Invalid tx payload');
       }
-      const b58 = parseBtcAddress(address);
-      const version = Buffer.from(numberToHex(b58.version), 'hex');
+      const payment = Address(scureBtcNetwork).decode(address);
+      const output = OutScript.encode(payment);
       const amountBN = btcToSats(amount);
-      const tx = contracts.bridge.initiateOutboundSwap(
-        BigInt(amountBN),
-        version,
-        b58.hash,
-        supplierId
-      );
+      const tx = contracts.magic.initiateOutboundSwap(BigInt(amountBN), output, supplierId);
       const postCondition = makeStandardFungiblePostCondition(
         sender,
         FungibleConditionCode.Equal,
@@ -67,5 +63,6 @@ export const useInitiateOutbound = ({ supplierId, address, amount }: OutboundTx)
     submit: _submit,
     ...tx,
     error: error || tx.error,
+    pendingInitOutbound,
   };
 };
