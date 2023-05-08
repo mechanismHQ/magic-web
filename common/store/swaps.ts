@@ -36,6 +36,7 @@ export interface InboundSwapStarted {
 
 export interface InboundSwapReady extends InboundSwapStarted {
   address: string;
+  metadata: string;
 }
 
 export interface InboundSwapWarned extends InboundSwapReady {
@@ -144,6 +145,7 @@ export function createReadySwap(swap: InboundSwapStarted): InboundSwapReady {
   });
   return {
     ...swap,
+    metadata: bytesToHex(metadata),
     address,
   };
 }
@@ -217,15 +219,15 @@ export const swapsListState = atomWithQuery<SwapListItem[]>(QueryKeys.SWAPS_LIST
   const session = get(stacksSessionAtom);
   const hubConfig = get(primaryGaiaHubConfigAtom);
   if (!session || !hubConfig) return [];
-  const pageRequest = JSON.stringify({});
+  const _pageRequest = JSON.stringify({});
   const fetchOptions: RequestInit = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // 'Content-Length': `${pageRequest.length}`,
+      // 'Content-Length': `${_pageRequest.length}`,
       Authorization: `bearer ${hubConfig.token}`,
     },
-    // body: pageRequest,
+    // body: _pageRequest,
   };
   const response = await fetchPrivate(
     `${hubConfig.server}/list-files/${hubConfig.address}`,

@@ -14,7 +14,7 @@ import {
 } from '../store';
 import { useInboundSwap } from './use-inbound-swap';
 import { useBtcTx } from '../store/api';
-import { createHtlcScript, generateMetadataHash } from 'magic-protocol';
+import { createHtlcScript } from 'magic-protocol';
 
 export function useRecoverSwap() {
   const { swap, updateSwap } = useInboundSwap();
@@ -37,18 +37,12 @@ export function useRecoverSwap() {
     if (!inbound) {
       throw new Error('Invalid inbound amount');
     }
-    // TODO: get the correct metadata hash
-    const metadata = generateMetadataHash({
-      swapperAddress: stxAddress!,
-      minAmount: inbound.xbtc,
-    });
     const htlc = createHtlcScript({
       expiration: BigInt(swap.expiration),
       senderPublicKey: hexToBytes(publicKey),
       recipientPublicKey: hexToBytes(swap.supplier.publicKey),
       hash,
-      metadata,
-      // swapper: swap.swapperId,
+      metadata: hexToBytes(swap.metadata),
     });
 
     const psbt = new Psbt({ network: btcNetwork });
