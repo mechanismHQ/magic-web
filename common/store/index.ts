@@ -11,7 +11,6 @@ import type { IntegerType } from 'micro-stacks/common';
 import { bytesToHex, hexToBytes } from 'micro-stacks/common';
 import { intToString } from '../utils';
 import { bridgeContract, getContracts } from '../contracts';
-import { useQueryAtomValue } from '../hooks/use-query-value';
 
 export enum QueryKeys {
   SUPPLIERID = 'supplierById',
@@ -240,11 +239,7 @@ export const swapperIdQuery = (address: string): Query => {
 // hooks
 // ---
 export const useSupplier = (id: number) => useQueryAtom(supplierState(id));
-export const useSwapperId = () => {
-  return useQueryAtomValue(swapperIdState);
-  // const [val] = useQueryAtom(swapperIdState);
-  // return val;
-};
+
 export const useSuppliers = () => useQueryAtom(suppliersState);
 
 export const useInboundSwap = (txid: string) => useQueryAtom(inboundSwapByTxidState(txid));

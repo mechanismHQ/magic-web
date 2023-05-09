@@ -3,7 +3,6 @@ import { Stack } from '@nelson-ui/react';
 import { useInboundSwap } from '../../common/hooks/use-inbound-swap';
 import { CenterBox } from '../center-box';
 import { getSwapStep, useSwapId } from '../../common/store/swaps';
-import { RegisterSwap } from './register';
 import { SwapReady } from './ready';
 import { SwapEscrow } from './escrow';
 import { SwapFinalize } from './finalize';
@@ -30,7 +29,7 @@ export const InboundSwap: React.FC = () => {
     };
   }, [setSwapId]);
 
-  const { secret, supplier, ...swapSafe } = swap;
+  const { secret, ...swapSafe } = swap;
 
   useEffect(() => {
     window.__unsafeMagicShowPreimage = function () {
@@ -42,9 +41,6 @@ export const InboundSwap: React.FC = () => {
     console.debug('Inbound swap:', swapSafe);
   }, [swapSafe]);
 
-  if (step === 'start') {
-    return <RegisterSwap />;
-  }
   if (step === 'ready') {
     return <SwapWarning />;
   }

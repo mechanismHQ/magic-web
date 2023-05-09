@@ -2,13 +2,12 @@ import { useCallback } from 'react';
 import { useInput } from './use-input';
 import { useAtom } from 'jotai';
 import { useAtomCallback, useAtomValue } from 'jotai/utils';
-import { btcAddressState, suppliersState, swapperIdState } from '../store';
+import { btcAddressState, suppliersState } from '../store';
 import { useGenerateInboundSwap } from './use-generate-inbound-swap';
 import { useRouter } from 'next/router';
 import { pendingInitOutboundState, useInitiateOutbound } from './tx/use-initiate-outbound';
 import nProgress from 'nprogress';
 import {
-  pendingRegisterSwapperState,
   amountState,
   currentSupplierState,
   swapFormValidState,
@@ -26,27 +25,26 @@ export function useSwapForm() {
   const submitInbound = useAtomCallback(
     useCallback(
       async (get, set) => {
-        const swapperId = get(swapperIdState);
+        // const swapperId = get(swapperIdState);
         const suppliers = get(suppliersState);
         const amountBN = get(amountSatsBNState);
         const supplier = get(currentSupplierState);
         const currentSupplier = suppliers.find(s => s.id === supplier.id);
         const isValid = get(swapFormValidState);
-        if (typeof swapperId === 'number') {
-          if (!isValid) return;
-          if (typeof currentSupplier === 'undefined')
-            throw new Error('Invalid state: no supplier.');
-          const swap = await generate({
-            supplier: currentSupplier,
-            inputAmount: amountBN.toString(),
-          });
-          void router.push({
-            pathname: '/inbound/[swapId]',
-            query: { swapId: swap.id },
-          });
-        } else {
-          set(pendingRegisterSwapperState, true);
-        }
+        // if (typeof swapperId === 'number') {
+        if (!isValid) return;
+        if (typeof currentSupplier === 'undefined') throw new Error('Invalid state: no supplier.');
+        const swap = await generate({
+          supplier: currentSupplier,
+          inputAmount: amountBN.toString(),
+        });
+        void router.push({
+          pathname: '/inbound/[swapId]',
+          query: { swapId: swap.id },
+        });
+        // } else {
+        //   set(pendingRegisterSwapperState, true);
+        // }
       },
       [generate, router]
     )

@@ -45,6 +45,7 @@ export const SwapLabel: React.FC<{ token: Token }> = ({ token }) => {
       isInline
       py="$2"
       px="14px"
+      pr="32px"
       borderRadius="7px"
       spacing="10px"
       // minWidth="104px"

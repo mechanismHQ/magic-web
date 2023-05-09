@@ -23,7 +23,7 @@ export const useFinalizeInbound = ({ txid, preimage, xbtc }: FinalizeSwap) => {
 
     const postCondition = makeContractFungiblePostCondition(
       bridgeAddress(),
-      'bridge',
+      'magic',
       FungibleConditionCode.LessEqual,
       xbtc,
       xbtcAssetInfo()

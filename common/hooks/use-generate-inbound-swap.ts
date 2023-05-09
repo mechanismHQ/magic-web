@@ -6,7 +6,6 @@ import type { Supplier } from '../store';
 import { currentStxAddressState } from '../store';
 import { publicKeyState } from '../store';
 import { createInboundSwap, inboundSwapKey } from '../store/swaps';
-import { intToBigInt } from 'micro-stacks/common';
 
 interface Generate {
   supplier: Supplier;
@@ -28,15 +27,13 @@ export function useGenerateInboundSwap() {
         if (typeof expiration === 'number') {
           console.debug('Setting invalid expiration of', expiration);
         }
-        const amountWithFeeRate =
-          (intToBigInt(inputAmount) * (10000n - intToBigInt(supplier.inboundFee))) / 10000n;
-        const minToReceive = amountWithFeeRate - BigInt(supplier.inboundBaseFee);
         const swap = createInboundSwap({
           supplier,
           publicKey,
           inputAmount,
           swapper: stxAddress!,
-          minAmount: minToReceive.toString(10),
+          baseFee: BigInt(supplier.inboundBaseFee).toString(10),
+          feeRate: BigInt(supplier.inboundFee).toString(10),
           expiration,
         });
         console.debug('Generated swap:', swap);

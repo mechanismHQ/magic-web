@@ -41,9 +41,3 @@ plan:
             cost: 315710
             path: contracts/bridge.clar
             anchor-block-only: true
-        - contract-publish:
-            contract-name: supplier-wrapper
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 23870
-            path: contracts/supplier-wrapper.clar
-            anchor-block-only: true

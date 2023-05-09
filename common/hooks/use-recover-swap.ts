@@ -6,12 +6,7 @@ import { broadcastBtc } from '../api';
 import { useAtomValue } from 'jotai/utils';
 import { stacksSessionAtom } from '@micro-stacks/react';
 import { btcNetwork } from '../constants';
-import {
-  btcAddressState,
-  currentStxAddressState,
-  fetchInboundSwap,
-  publicKeyState,
-} from '../store';
+import { btcAddressState, fetchInboundSwap, publicKeyState } from '../store';
 import { useInboundSwap } from './use-inbound-swap';
 import { useBtcTx } from '../store/api';
 import { createHtlcScript } from 'magic-protocol';
@@ -22,7 +17,6 @@ export function useRecoverSwap() {
   const [btcTx] = useBtcTx(swap.btcTxid, swap.address);
 
   const btcAddress = useAtomValue(btcAddressState);
-  const stxAddress = useAtomValue(currentStxAddressState);
   const session = useAtomValue(stacksSessionAtom);
   const publicKey = useAtomValue(publicKeyState);
   const [txid, setTxid] = useState('');
@@ -91,7 +85,7 @@ export function useRecoverSwap() {
       ...swap,
       recoveryTxid: broadcastId,
     });
-  }, [swap, btcTx, privateKey, btcAddress, publicKey, updateSwap, stxAddress]);
+  }, [swap, btcTx, privateKey, btcAddress, publicKey, updateSwap]);
 
   return {
     submit,

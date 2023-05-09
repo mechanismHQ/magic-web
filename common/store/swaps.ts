@@ -1,7 +1,7 @@
 import { primaryGaiaHubConfigAtom, stacksSessionAtom } from '@micro-stacks/react';
 import { atom, useAtom } from 'jotai';
 import { atomFamilyWithQuery, useQueryAtom } from 'jotai-query-toolkit';
-import { bytesToHex, hexToBytes, intToBigInt } from 'micro-stacks/common';
+import { bytesToHex, hexToBytes } from 'micro-stacks/common';
 import { getRandomBytes } from 'micro-stacks/crypto';
 import { hashSha256 } from 'micro-stacks/crypto-sha';
 import { getFile } from 'micro-stacks/storage';
@@ -31,7 +31,8 @@ export interface InboundSwapStarted {
   expiration: number;
   publicKey: string;
   inputAmount: string;
-  minAmount: string;
+  feeRate: string;
+  baseFee: string;
 }
 
 export interface InboundSwapReady extends InboundSwapStarted {
@@ -85,8 +86,9 @@ export function getSwapStep(swap: InboundSwap) {
   if ('escrowTxid' in swap) return 'escrowed';
   if ('btcTxid' in swap) return 'sent';
   if ('warned' in swap) return 'warned';
-  if ('swapperId' in swap) return 'ready';
-  return 'start';
+  return 'ready';
+  // if ('swapperId' in swap) return 'ready';
+  // return 'start';
 }
 
 export type SwapStep = ReturnType<typeof getSwapStep>;
@@ -101,14 +103,16 @@ export function createInboundSwap({
   publicKey,
   inputAmount,
   expiration = 500,
-  minAmount,
+  baseFee,
+  feeRate,
 }: {
   supplier: Supplier;
   swapper: string;
   publicKey: string;
   inputAmount: string;
   expiration?: number;
-  minAmount: string;
+  baseFee: string;
+  feeRate: string;
 }): InboundSwapReady {
   const secret = getRandomBytes(32);
   const swap = {
@@ -119,7 +123,8 @@ export function createInboundSwap({
     publicKey,
     inputAmount,
     expiration,
-    minAmount,
+    baseFee,
+    feeRate,
     swapper,
   };
   // if (swapperId !== undefined) {
@@ -134,7 +139,8 @@ export function createReadySwap(swap: InboundSwapStarted): InboundSwapReady {
   const hash = hashSha256(hexToBytes(secret));
   const metadata = generateMetadataHash({
     swapperAddress: swap.swapper,
-    minAmount: intToBigInt(swap.minAmount),
+    feeRate: swap.feeRate,
+    baseFee: swap.baseFee,
   });
   const address = generateHTLCAddress({
     senderPublicKey: Buffer.from(publicKey, 'hex'),
