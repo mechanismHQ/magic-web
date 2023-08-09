@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { address as bAddress } from 'bitcoinjs-lib';
-import { btcNetwork } from '../../common/constants';
+import { scureBtcNetwork } from '../../common/constants';
+import * as btc from '@scure/btc-signer';
 import { getScriptHash } from '../../common/htlc';
 import type { TxData } from '../../common/api/electrum';
 import { getTxData, listUnspent } from '../../common/api/electrum';
@@ -41,7 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (!address) {
     return res.status(200).send({ status: 'unsent' });
   }
-  const output = bAddress.toOutputScript(address, btcNetwork);
+  const payment = btc.Address(scureBtcNetwork).decode(address);
+  const output = btc.OutScript.encode(payment);
   const scriptHash = getScriptHash(output);
   const [unspent] = await listUnspent(scriptHash);
   if (unspent === undefined) {
