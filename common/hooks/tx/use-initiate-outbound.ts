@@ -10,7 +10,7 @@ import { useStxAddress } from '../use-stx-address';
 import { useTx } from '../use-tx';
 import { outboundTxidState } from '../../store/swap-form';
 import { Address, OutScript } from '@scure/btc-signer';
-import { scureBtcNetwork } from '../../constants';
+import { btcNetwork } from '../../constants';
 
 interface OutboundTx {
   supplierId?: number;
@@ -31,18 +31,20 @@ export const useInitiateOutbound = ({ supplierId, address, amount }: OutboundTx)
       if (!address || supplierId === undefined || !amount || !sender) {
         throw new Error('Invalid tx payload');
       }
-      const payment = Address(scureBtcNetwork).decode(address);
+      const payment = Address(btcNetwork).decode(address);
       const output = OutScript.encode(payment);
       const amountBN = btcToSats(amount);
       const tx = contracts.magic.initiateOutboundSwap(BigInt(amountBN), output, supplierId);
       const postCondition = makeStandardFungiblePostCondition(
         sender,
         FungibleConditionCode.Equal,
-        amountBN,
+        BigInt(amountBN),
         xbtcAssetInfo()
       );
       try {
-        return submit(tx, { postConditions: [postCondition] });
+        return submit(tx, {
+          postConditions: [postCondition],
+        });
       } catch (error) {
         setPendingOutbound(false);
         throw error;

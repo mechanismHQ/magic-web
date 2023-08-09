@@ -3,7 +3,7 @@ import { Box, SpaceBetween, Stack } from '@nelson-ui/react';
 import { Text } from '../text';
 import { useInboundSwap } from '../../common/hooks/use-inbound-swap';
 import { DuplicateIcon } from '../icons/duplicate';
-import { satsToBtc } from '../../common/utils';
+import { satsToBtc, truncateMiddle } from '../../common/utils';
 
 export const BtcAddress: React.FC = () => {
   const { swap } = useInboundSwap();
@@ -22,7 +22,7 @@ export const BtcAddress: React.FC = () => {
       >
         <SpaceBetween>
           <Text variant="Caption01" color="$text">
-            {swap.address}
+            {truncateMiddle(swap.address, 20)}
           </Text>
           <DuplicateIcon clipboardText={swap.address} />
         </SpaceBetween>

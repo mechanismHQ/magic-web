@@ -35,8 +35,8 @@ export enum QueryKeys {
 export async function fetchSupplierWithContract(id: number) {
   const { magic: bridge } = getContracts();
   const [supplier, funds] = await Promise.all([
-    webProvider.ro(bridge.getSupplier(id)),
-    webProvider.ro(bridge.getFunds(id)),
+    webProvider.ro(bridge.getSupplier(id), { latest: true }),
+    webProvider.ro(bridge.getFunds(id), { latest: true }),
   ]);
   if (supplier && funds !== null) {
     return {

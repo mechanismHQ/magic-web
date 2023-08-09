@@ -10,6 +10,7 @@ import { SwapDone } from './done';
 import { SwapWarning } from './warning';
 import { useSetTitle } from '../head';
 import { useDeepEffect } from '../../common/hooks/use-deep-effect';
+import { NETWORK_CONFIG } from '../../common/constants';
 
 // Debugging function to get preimage
 declare global {
@@ -39,7 +40,10 @@ export const InboundSwap: React.FC = () => {
 
   useDeepEffect(() => {
     console.debug('Inbound swap:', swapSafe);
-  }, [swapSafe]);
+    if (NETWORK_CONFIG === 'mocknet') {
+      console.debug('Preimage:', secret);
+    }
+  }, [swapSafe, secret]);
 
   if (step === 'ready') {
     return <SwapWarning />;

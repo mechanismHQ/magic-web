@@ -1,7 +1,6 @@
 import type { StacksNetwork } from 'micro-stacks/network';
 import {
   HIRO_MAINNET_DEFAULT,
-  HIRO_MOCKNET_DEFAULT,
   HIRO_TESTNET_DEFAULT,
   StacksMainnet,
   StacksMocknet,
@@ -30,8 +29,9 @@ if (NETWORK_CONFIG === 'mainnet') {
   btcNetwork = networks.testnet;
   scureBtcNetwork = TEST_NETWORK;
 } else {
+  const devUrl = typeof window !== 'undefined' ? 'localhost' : '127.0.0.1';
   network = new StacksMocknet({
-    url: process.env.NEXT_PUBLIC_CORE_URL || HIRO_MOCKNET_DEFAULT,
+    url: process.env.NEXT_PUBLIC_CORE_URL || `http://${devUrl}:3999`,
   });
   btcNetwork = networks.regtest;
   scureBtcNetwork = TEST_NETWORK;
