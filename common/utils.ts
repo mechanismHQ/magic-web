@@ -2,11 +2,10 @@ import type { IntegerType } from 'micro-stacks/common';
 import { bytesToBigInt, intToBigInt as _intToBigInt } from 'micro-stacks/common';
 import BigNumber from 'bignumber.js';
 import { address as bAddress, networks, payments } from 'bitcoinjs-lib';
-import { coreUrl, btcNetwork, NETWORK_CONFIG } from './constants';
-import { hashSha256 } from 'micro-stacks/crypto-sha';
-import { base58checkEncode, hashRipemd160 } from 'micro-stacks/crypto';
+import { coreUrl, btcNetwork, NETWORK_CONFIG, scureBtcNetwork } from './constants';
 import type { Supplier } from './store';
 import { outputToAddress } from 'magic-protocol';
+import * as btc from '@scure/btc-signer';
 
 export function getTxUrl(txId: string) {
   const id = getTxId(txId);
@@ -161,9 +160,7 @@ export function _getOutboundAddress(hash: Uint8Array, versionBytes: Uint8Array) 
 }
 
 export function pubKeyToBtcAddress(publicKey: Uint8Array) {
-  const sha256 = hashSha256(publicKey);
-  const hash160 = hashRipemd160(sha256);
-  return base58checkEncode(hash160, btcNetwork.pubKeyHash);
+  return btc.p2wpkh(publicKey, scureBtcNetwork).address!;
 }
 
 export function splitContractId(identifier: string) {
