@@ -3,17 +3,13 @@ import type { ContractCallTransaction } from '@stacks/stacks-blockchain-api-type
 import { fetchTransaction } from 'micro-stacks/api';
 import type { UIntCV } from 'micro-stacks/clarity';
 import { hexToCV } from 'micro-stacks/clarity';
-// import { network } from '../common/constants';
-import { StacksTestnet } from 'micro-stacks/network';
 import type { TypedAbiArg, TypedAbiFunction } from '@clarigen/core';
 import { cvToValue } from '@clarigen/core';
 import type { BridgeContract } from '../common/contracts';
 import { getOutboundAddress } from '../common/utils';
 import { OPERATOR_KEY, setupScript } from './helpers';
 import { bytesToHex } from 'micro-stacks/common';
-import { webProvider } from '../common/constants';
-
-const network = new StacksTestnet();
+import { network, webProvider } from '../common/constants';
 
 const [txid] = process.argv.slice(2);
 

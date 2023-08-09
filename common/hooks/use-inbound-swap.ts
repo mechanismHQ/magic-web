@@ -25,6 +25,8 @@ export function useInboundSwap() {
   }, [swap]);
   const gaiaConfig = useAtomValue(gaiaHubConfigAtom);
 
+  // const { secret, supplier, ...swapSafe } = swap;
+
   const updateSwap = useCallback(
     async (swapData: Partial<InboundSwap>) => {
       NProgress.start();
