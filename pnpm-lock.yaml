@@ -75,7 +75,7 @@ specifiers:
   localtunnel: ^2.0.2
   lodash: ^4.17.21
   lodash-es: ^4.17.21
-  magic-protocol: file:../v2
+  magic-protocol: 2.0.0-beta.4
   micro-stacks: 0.2.4
   modern-normalize: ^1.1.0
   next: 12.1.0
@@ -139,7 +139,7 @@ dependencies:
   jotai-query-toolkit: 0.1.23_5bcbipz4yque32vxketiek5gqa
   lodash: 4.17.21
   lodash-es: 4.17.21
-  magic-protocol: file:../v2
+  magic-protocol: 2.0.0-beta.4
   micro-stacks: 0.2.4
   modern-normalize: 1.1.0
   next: 12.1.0_sfoxds7t5ydpegc3knd667wn6m
@@ -6327,6 +6327,19 @@ packages:
     dependencies:
       yallist: 4.0.0
 
+  /magic-protocol/2.0.0-beta.4:
+    resolution: {integrity: sha512-xUNZWG5FQf9JKQfg+i/z2meggtP5IuTI5VuMB+UIC0o9FrqyjQy/TOmIUNKSbuIDt1+qlLAlOg+Vl5A3NkaFOw==}
+    dependencies:
+      '@noble/hashes': 1.3.0
+      '@scure/base': 1.1.1
+      '@scure/btc-signer': 1.0.0
+      micro-packed: 0.3.2
+      micro-stacks: 1.2.1
+    transitivePeerDependencies:
+      - '@scure/bip32'
+      - '@scure/bip39'
+    dev: false
+
   /make-dir/3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
     engines: {node: '>=8'}
@@ -8630,19 +8643,4 @@ packages:
     dependencies:
       react: 17.0.2
       use-sync-external-store: 1.2.0_react@17.0.2
-    dev: false
-
-  file:../v2:
-    resolution: {directory: ../v2, type: directory}
-    name: magic-protocol
-    version: 2.0.0
-    dependencies:
-      '@noble/hashes': 1.3.0
-      '@scure/base': 1.1.1
-      '@scure/btc-signer': 1.0.0
-      micro-packed: 0.3.2
-      micro-stacks: 1.2.1
-    transitivePeerDependencies:
-      - '@scure/bip32'
-      - '@scure/bip39'
     dev: false

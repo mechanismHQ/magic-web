@@ -13,6 +13,7 @@ import {
   swapFormValidState,
   amountSatsBNState,
   isOutboundState,
+  outputAmountSatsState,
 } from '../store/swap-form';
 
 export function useSwapForm() {
@@ -21,6 +22,7 @@ export function useSwapForm() {
   const btcAddress = useInput(useAtom(btcAddressState));
   const supplier = useAtomValue(currentSupplierState);
   const { generate } = useGenerateInboundSwap();
+  const outputAmount = useAtomValue(outputAmountSatsState);
 
   const submitInbound = useAtomCallback(
     useCallback(
@@ -54,6 +56,7 @@ export function useSwapForm() {
     address: btcAddress.value,
     supplierId: supplier.id,
     amount: amount.value,
+    outputAmount: outputAmount.toString(),
   });
 
   const submit = useAtomCallback(

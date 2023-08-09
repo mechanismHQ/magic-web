@@ -8,8 +8,9 @@ import {
 } from 'micro-stacks/network';
 import { ClarigenClient } from '@clarigen/core';
 import { networks } from 'bitcoinjs-lib';
+// import type { BTCNetwork } from 'magic-protocol';
 import type { BTCNetwork } from 'magic-protocol';
-import { NETWORK, TEST_NETWORK } from 'magic-protocol';
+import { BitcoinNetwork } from 'magic-protocol';
 
 export let network: StacksNetwork;
 export let btcNetwork: networks.Network;
@@ -21,20 +22,20 @@ if (NETWORK_CONFIG === 'mainnet') {
     url: process.env.NEXT_PUBLIC_CORE_URL || HIRO_MAINNET_DEFAULT,
   });
   btcNetwork = networks.bitcoin;
-  scureBtcNetwork = NETWORK;
+  scureBtcNetwork = BitcoinNetwork.Mainnet;
 } else if (NETWORK_CONFIG === 'testnet') {
   network = new StacksTestnet({
     url: process.env.NEXT_PUBLIC_CORE_URL || HIRO_TESTNET_DEFAULT,
   });
   btcNetwork = networks.testnet;
-  scureBtcNetwork = TEST_NETWORK;
+  scureBtcNetwork = BitcoinNetwork.Testnet;
 } else {
   const devUrl = typeof window !== 'undefined' ? 'localhost' : '127.0.0.1';
   network = new StacksMocknet({
     url: process.env.NEXT_PUBLIC_CORE_URL || `http://${devUrl}:3999`,
   });
   btcNetwork = networks.regtest;
-  scureBtcNetwork = TEST_NETWORK;
+  scureBtcNetwork = BitcoinNetwork.Regtest;
 }
 
 export const coreUrl = network.getCoreApiUrl();

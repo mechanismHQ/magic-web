@@ -61,7 +61,7 @@
     "jotai-query-toolkit": "0.1.23",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "magic-protocol": "file:../v2",
+    "magic-protocol": "2.0.0-beta.4",
     "micro-stacks": "0.2.4",
     "modern-normalize": "^1.1.0",
     "next": "12.1.0",

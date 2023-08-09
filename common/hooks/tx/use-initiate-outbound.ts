@@ -16,13 +16,14 @@ interface OutboundTx {
   supplierId?: number;
   amount: string;
   address: string;
+  outputAmount: string;
 }
 
 export const pendingInitOutboundState = atom(false);
 
 const outboundErrorState = atom('');
 
-export const useInitiateOutbound = ({ supplierId, address, amount }: OutboundTx) => {
+export const useInitiateOutbound = ({ supplierId, address, amount, outputAmount }: OutboundTx) => {
   const sender = useStxAddress();
   const [pendingInitOutbound, setPendingOutbound] = useAtom(pendingInitOutboundState);
   const [error, setError] = useAtom(outboundErrorState);
@@ -34,7 +35,12 @@ export const useInitiateOutbound = ({ supplierId, address, amount }: OutboundTx)
       const payment = Address(btcNetwork).decode(address);
       const output = OutScript.encode(payment);
       const amountBN = btcToSats(amount);
-      const tx = contracts.magic.initiateOutboundSwap(BigInt(amountBN), output, supplierId);
+      const tx = contracts.magic.initiateOutboundSwap(
+        BigInt(amountBN),
+        output,
+        supplierId,
+        BigInt(outputAmount)
+      );
       const postCondition = makeStandardFungiblePostCondition(
         sender,
         FungibleConditionCode.Equal,

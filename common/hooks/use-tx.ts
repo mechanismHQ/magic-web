@@ -96,6 +96,7 @@ export const useTx = <Ok, Err>(builder: TxBuilder<Ok, Err>, opts: UseTxOptions =
           } else {
             setError(`${error as string}`);
           }
+          throw error;
         }
       },
       [builder, opts.sponsored, submitter, opts.txidAtom]
