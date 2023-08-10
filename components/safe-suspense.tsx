@@ -6,11 +6,6 @@ import { Box } from '@nelson-ui/react';
 import { styled } from '@stitches/react';
 import { useIsSSR } from '../common/hooks/use-is-ssr';
 
-const spin = keyframes({
-  '0%': { transform: 'rotateY(0deg)' },
-  '100%': { transform: 'rotateY(360deg)' },
-});
-
 const circleSpin = keyframes({
   '0%': { transform: 'rotate(0deg)' },
   '100%': { transform: 'rotate(360deg)' },

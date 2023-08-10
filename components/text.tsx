@@ -2,12 +2,9 @@ import React from 'react';
 import type { BoxProps } from '@nelson-ui/react';
 import { Box } from '@nelson-ui/react';
 import type { TextVariant } from '../common/theme';
-import { baseTheme, textStyles } from '../common/theme';
+import { textStyles } from '../common/theme';
 import clsx from 'clsx';
 import type { CSSTypes } from '@nelson-ui/core';
-
-// const { textStyles } = generatedTheme;
-const { colors } = baseTheme;
 
 const getDefaultColor = (type?: keyof typeof textStyles): string => {
   switch (type) {

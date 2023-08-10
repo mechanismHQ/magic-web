@@ -32,7 +32,7 @@ export const TxDate: React.FC<{ txid: string }> = ({ txid }) => {
 };
 
 export const EventRow: React.FC<{ event: FormattedBridgeEvent }> = ({ event }) => {
-  const { txid, print, title, description } = event;
+  const { txid, title, description } = event;
   return (
     <EventRowComp>
       <SpaceBetween alignItems="center">

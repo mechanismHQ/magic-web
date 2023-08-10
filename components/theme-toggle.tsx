@@ -38,7 +38,7 @@ export function DarkModeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   useThemeEffect(theme);
   const toggleTheme = (value: boolean) => {
-    setTheme(s => (value ? 'dark' : 'light'));
+    setTheme(() => (value ? 'dark' : 'light'));
   };
   return (
     <Switch onCheckedChange={toggleTheme}>

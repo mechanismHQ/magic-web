@@ -20,7 +20,7 @@ export interface LinkProps extends TextProps {
 
 export const Link: React.FC<LinkProps> = ({ href, prefetch, children, ...props }) => {
   return (
-    <NextLink href={href} passHref>
+    <NextLink href={href} passHref prefetch={prefetch}>
       <Text as="a" color="$text" {...props} textDecoration="none">
         {children}
       </Text>

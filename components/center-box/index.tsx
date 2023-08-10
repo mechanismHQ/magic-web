@@ -19,7 +19,7 @@ export const CenterBox: React.FC<CenterBoxProps> = ({
   topExtra,
   boxProps = {},
   noPadding,
-  showSwapId,
+  // showSwapId,
 }) => {
   const [swapId] = useSwapId();
   const stackProps = useMemo(() => {

@@ -50,9 +50,9 @@ const StyledContent = styled(TooltipPrimitive.Content, {
   },
 });
 
-const StyledArrow = styled(TooltipPrimitive.Arrow, {
-  fill: 'white',
-});
+// const StyledArrow = styled(TooltipPrimitive.Arrow, {
+//   fill: 'white',
+// });
 
 export const Tooltip = TooltipPrimitive.Root;
 export const TooltipTrigger = TooltipPrimitive.Trigger;

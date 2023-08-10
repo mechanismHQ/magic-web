@@ -54,11 +54,11 @@ export const SwapRow: React.FC<RowProps> = ({
   const maxBtc = useMemo(() => {
     return satsToBtc(amount);
   }, [amount]);
-  const date = useMemo(() => {
-    const unix = Number(id);
-    const d = new Date(unix);
-    return format(d, 'yyyy-MM-dd');
-  }, [id]);
+  // const date = useMemo(() => {
+  //   const unix = Number(id);
+  //   const d = new Date(unix);
+  //   return format(d, 'yyyy-MM-dd');
+  // }, [id]);
   const buttonText = useMemo(() => {
     if (status === 'canceled') return 'Canceled';
     if (status === 'error' || status === 'pending') return 'Pending';

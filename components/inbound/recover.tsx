@@ -14,7 +14,7 @@ import { useWaitTime } from '../../common/hooks/use-wait-time';
 import { useDeepMemo } from '../../common/hooks/use-deep-effect';
 
 export const SwapRedeem: React.FC = () => {
-  const { swap, updateSwap } = useInboundSwap();
+  const { swap } = useInboundSwap();
   if (!('escrowTxid' in swap)) throw new Error('Invalid swap state');
   const [escrowTx] = useStxTx(swap.escrowTxid);
   const [btcTx] = useBtcTx(swap.btcTxid, swap.address);
