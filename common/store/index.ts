@@ -127,7 +127,7 @@ export const swapperIdState = atomWithQuery<number | null>(QueryKeys.SWAPPERID, 
 });
 swapperIdState.debugLabel = 'swapperId';
 
-export const suppliersState = atomWithQuery(QueryKeys.SUPPLIERS, async get => {
+export const suppliersState = atomWithQuery(QueryKeys.SUPPLIERS, async _get => {
   const suppliers = await fetchAllSuppliersApi();
   return suppliers;
 });

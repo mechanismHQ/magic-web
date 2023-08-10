@@ -30,7 +30,7 @@ export const BtcInput: React.FC = () => {
       <Text variant="Label02" color="$onSurface-text-dim" className="btc-label">
         Your BTC Address
       </Text>
-      <MagicInput {...btcAddress} placeholder="Enter a non-Segwit Bitcoin address" />
+      <MagicInput {...btcAddress} placeholder="Enter your Bitcoin address" />
     </Stack>
   );
 };

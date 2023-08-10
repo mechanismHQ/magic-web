@@ -5,12 +5,13 @@ import {
 } from 'micro-stacks/transactions';
 import { useCallback } from 'react';
 import { xbtcAssetInfo } from '../../contracts';
-import { btcToSats, parseBtcAddress } from '../../utils';
+import { btcToSats } from '../../utils';
 import { useStxAddress } from '../use-stx-address';
 import { useTx } from '../use-tx';
-import { outboundTxidState } from '../../store/swap-form';
+import { outboundTxidState, swapFormValidState } from '../../store/swap-form';
 import { Address, OutScript } from '@scure/btc-signer';
 import { btcNetwork } from '../../constants';
+import { useAtomCallback } from 'jotai/utils';
 
 interface OutboundTx {
   supplierId?: number;
@@ -26,7 +27,7 @@ const outboundErrorState = atom('');
 export const useInitiateOutbound = ({ supplierId, address, amount, outputAmount }: OutboundTx) => {
   const sender = useStxAddress();
   const [pendingInitOutbound, setPendingOutbound] = useAtom(pendingInitOutboundState);
-  const [error, setError] = useAtom(outboundErrorState);
+  const [error] = useAtom(outboundErrorState);
   const { submit, ...tx } = useTx(
     (contracts, submit) => {
       if (!address || supplierId === undefined || !amount || !sender) {
@@ -58,15 +59,22 @@ export const useInitiateOutbound = ({ supplierId, address, amount, outputAmount 
     },
     { txidAtom: outboundTxidState }
   );
-  const _submit = useCallback(() => {
-    try {
-      parseBtcAddress(address);
-      return submit();
-    } catch (error) {
-      setError('Please use a valid BTC address');
-      setPendingOutbound(false);
-    }
-  }, [address, submit, setPendingOutbound, setError]);
+
+  const _submit = useAtomCallback(
+    useCallback(
+      async (get, set) => {
+        const swapIsValid = get(swapFormValidState);
+        if (!swapIsValid) return;
+        try {
+          return submit();
+        } catch (error) {
+          set(outboundErrorState, 'Please use a valid BTC address');
+          set(pendingInitOutboundState, false);
+        }
+      },
+      [submit]
+    )
+  );
   return {
     submit: _submit,
     ...tx,

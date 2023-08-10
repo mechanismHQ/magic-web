@@ -26,14 +26,12 @@ export function useSwapForm() {
 
   const submitInbound = useAtomCallback(
     useCallback(
-      async (get, set) => {
-        // const swapperId = get(swapperIdState);
+      async (get, _set) => {
         const suppliers = get(suppliersState);
         const amountBN = get(amountSatsBNState);
         const supplier = get(currentSupplierState);
         const currentSupplier = suppliers.find(s => s.id === supplier.id);
         const isValid = get(swapFormValidState);
-        // if (typeof swapperId === 'number') {
         if (!isValid) return;
         if (typeof currentSupplier === 'undefined') throw new Error('Invalid state: no supplier.');
         const swap = await generate({
@@ -44,9 +42,6 @@ export function useSwapForm() {
           pathname: '/inbound/[swapId]',
           query: { swapId: swap.id },
         });
-        // } else {
-        //   set(pendingRegisterSwapperState, true);
-        // }
       },
       [generate, router]
     )

@@ -5,17 +5,12 @@ import sortBy from 'lodash-es/sortBy';
 import type { Supplier } from '.';
 import { btcAddressState } from '.';
 import type { Token } from '../../components/swap-container/swap-input';
-import {
-  btcToSatsBN,
-  getSwapAmount,
-  satsToBtc,
-  bpsToPercent,
-  intToBigInt,
-  parseBtcAddress,
-} from '../utils';
+import { btcToSatsBN, getSwapAmount, satsToBtc, bpsToPercent, intToBigInt } from '../utils';
 import type { SupplierWithCapacity } from './api';
 import { balancesState } from './api';
 import { suppliersWithCapacityState } from './api';
+import * as btc from '@scure/btc-signer';
+import { scureBtcNetwork } from '../constants';
 
 export const outboundTxidState = atom<string | undefined>(undefined);
 
@@ -193,8 +188,8 @@ export const hasCapacityState = selectAtom(capacityErrorState, e => typeof e ===
 
 export const btcAddressValidState = selectAtom(btcAddressState, address => {
   try {
-    parseBtcAddress(address);
-    return true;
+    const payment = btc.Address(scureBtcNetwork).decode(address);
+    return payment.type !== 'unknown';
   } catch (error) {
     return false;
   }

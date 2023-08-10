@@ -1,7 +1,7 @@
 import type { IntegerType } from 'micro-stacks/common';
 import { bytesToBigInt, intToBigInt as _intToBigInt } from 'micro-stacks/common';
 import BigNumber from 'bignumber.js';
-import { address as bAddress, networks, payments } from 'bitcoinjs-lib';
+import { networks, payments } from 'bitcoinjs-lib';
 import { coreUrl, btcNetwork, NETWORK_CONFIG, scureBtcNetwork } from './constants';
 import type { Supplier } from './store';
 import { outputToAddress } from 'magic-protocol';
@@ -125,16 +125,6 @@ export const addressVersionToMainnetVersion: Record<number, number> = {
   [196]: 5,
 };
 
-export function parseBtcAddress(address: string) {
-  const b58 = bAddress.fromBase58Check(address);
-  const version = addressVersionToMainnetVersion[b58.version] as number | undefined;
-  if (typeof version !== 'number') throw new Error('Invalid address version.');
-  return {
-    version,
-    hash: b58.hash,
-  };
-}
-
 // Add 0x to beginning of txid
 export function getTxId(txId: string) {
   return txId.startsWith('0x') ? txId : `0x${txId}`;
@@ -147,6 +137,10 @@ export function getOutboundPayment(hash: Uint8Array, versionBytes: Uint8Array) {
   } else {
     return payments.p2sh({ network: btcNetwork, hash: Buffer.from(hash) });
   }
+}
+
+export function addressToOutput(address: string) {
+  return btc.OutScript.encode(btc.Address(scureBtcNetwork).decode(address));
 }
 
 export function getOutboundAddress(output: Uint8Array) {
