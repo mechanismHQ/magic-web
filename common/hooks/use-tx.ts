@@ -14,7 +14,7 @@ import { privateKeyState } from '../store';
 import { useQueryAtomValue } from './use-query-value';
 import type { PrimitiveAtom } from 'jotai';
 
-type Receipt<Ok, Err> = Awaited<ReturnType<typeof submitTx>>;
+type Receipt<_Ok, _Err> = Awaited<ReturnType<typeof submitTx>>;
 
 type TxOptions = Omit<
   ContractCallTxOptions,

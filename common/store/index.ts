@@ -82,6 +82,11 @@ export async function fetchInboundSwap(txid: string) {
   return swap;
 }
 
+export async function fetchFullInboundSwap(txid: string) {
+  const swap = await webProvider.roOk(bridgeContract().getFullInbound(hexToBytes(txid)));
+  return swap;
+}
+
 export async function fetchOutboundSwap(swapId: bigint) {
   return await webProvider.ro(bridgeContract().getOutboundSwap(swapId));
 }

@@ -7,7 +7,12 @@ import { hashSha256 } from 'micro-stacks/crypto-sha';
 import { getFile } from 'micro-stacks/storage';
 import { generateHTLCAddress } from '../htlc';
 import type { Supplier } from './index';
-import { QueryKeys, finalizedOutboundSwapState, privateKeyState } from './index';
+import {
+  QueryKeys,
+  fetchFullInboundSwap,
+  finalizedOutboundSwapState,
+  privateKeyState,
+} from './index';
 import { atomWithQuery } from 'jotai-query-toolkit';
 import { fetchPrivate } from 'micro-stacks/common';
 import type { TransactionStatus } from '../api/stacks';
@@ -15,6 +20,7 @@ import { stxTxResultState } from './api';
 import { waitForAll } from 'jotai/utils';
 import { APP_VERSION, NETWORK_CONFIG } from '../constants';
 import { generateMetadataHash } from 'magic-protocol';
+import type { InboundSwapFull } from '../events';
 
 export const swapIdState = atom<string | undefined>(undefined);
 
@@ -286,6 +292,14 @@ export const fullOutboundSwapState = atomFamilyWithQuery<string, FullOutboundSwa
     return swap;
   },
   { refetchInterval: 60000 }
+);
+
+export const fullInboundState = atomFamilyWithQuery<string, InboundSwapFull | null>(
+  (get, swapTxid) => ['INBOUND_SWAP_FULL', swapTxid],
+  async (get, swapTxid) => {
+    const swap = await fetchFullInboundSwap(swapTxid);
+    return swap;
+  }
 );
 
 export const allSwapsState = atom<(InboundSwap | FullOutboundSwap)[]>(get => {
