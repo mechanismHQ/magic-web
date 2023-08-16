@@ -28,8 +28,8 @@ dependencies:
     specifier: 1.0.14
     version: 1.0.14(react@17.0.2)
   '@mempool/mempool.js':
-    specifier: ^2.2.4
-    version: 2.2.4
+    specifier: ^2.3.0
+    version: 2.3.0
   '@micro-stacks/nextjs':
     specifier: 0.1.1
     version: 0.1.1(@babel/core@7.16.0)(@babel/template@7.16.0)(react-dom@17.0.2)(react-query@3.32.1)(react@17.0.2)
@@ -1436,11 +1436,11 @@ packages:
       globby: 11.1.0
       read-yaml-file: 1.1.0
 
-  /@mempool/mempool.js@2.2.4:
-    resolution: {integrity: sha512-G9Ga2jHLfAuU/qXikRBtTecYr7BhLJH1WbIahefnGpgP48DCQaj1jizvuRZHhoElUvUT5flRt/O9kLjlbToqhw==}
+  /@mempool/mempool.js@2.3.0:
+    resolution: {integrity: sha512-FrN9WjZCEyyLodrTPQxmlWDh8B/UGK0jlKfVNzJxqzQ1IMPo/Hpdws8xwYEcsks5JqsaxbjLwaC3GAtJ6Brd0A==}
     dependencies:
-      axios: 0.21.4(debug@4.3.2)
-      ws: 7.5.5
+      axios: 0.24.0
+      ws: 8.3.0
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -3548,6 +3548,7 @@ packages:
       follow-redirects: 1.14.9(debug@4.3.2)
     transitivePeerDependencies:
       - debug
+    dev: true
 
   /axios@0.24.0:
     resolution: {integrity: sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==}
@@ -8591,6 +8592,19 @@ packages:
 
   /ws@8.2.3:
     resolution: {integrity: sha512-wBuoj1BDpC6ZQ1B7DWQBYVLphPWkm8i9Y0/3YdHjHKHiohOJ1ws+3OccDWtH+PoC9DZD5WOTrJvNbWvjS6JWaA==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: false
+
+  /ws@8.3.0:
+    resolution: {integrity: sha512-Gs5EZtpqZzLvmIM59w4igITU57lrtYVFneaa434VROv4thzJyV6UjIL3D42lslWlI+D4KzLYnxSwtfuiO79sNw==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
