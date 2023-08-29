@@ -1,5 +1,19 @@
 # Magic Protocol Web App
 
+## 1.0.0
+
+### Major Changes
+
+- a3c8d89: The Magic Protocol web app is now built for version 2 of the Magic protocol. Improvements include segwit capabilities, less transactions, and improved security.
+
+### Minor Changes
+
+- 58c2d4b: Adds validation to an inbound's swap expiration to ensure it doesn't expire too far in the future.
+
+### Patch Changes
+
+- c877f7b: Fixes issues with Gaia hub integration due to domain migration
+
 ## 0.5.0
 
 ### Minor Changes
