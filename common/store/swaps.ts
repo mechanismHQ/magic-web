@@ -1,4 +1,4 @@
-import { primaryGaiaHubConfigAtom, stacksSessionAtom } from '@micro-stacks/react';
+import { stacksSessionAtom } from '@micro-stacks/react';
 import { atom, useAtom } from 'jotai';
 import { atomFamilyWithQuery, useQueryAtom } from 'jotai-query-toolkit';
 import { bytesToHex, hexToBytes } from 'micro-stacks/common';
@@ -21,6 +21,7 @@ import { waitForAll } from 'jotai/utils';
 import { APP_VERSION, NETWORK_CONFIG } from '../constants';
 import { generateMetadataHash } from 'magic-protocol';
 import type { InboundSwapFull } from '../events';
+import { generateGaiaHubConfigSync } from '../gaia';
 
 export const swapIdState = atom<string | undefined>(undefined);
 
@@ -162,6 +163,17 @@ export function createReadySwap(swap: InboundSwapStarted): InboundSwapReady {
   };
 }
 
+export const gaiaHubConfigAtom = atom(async get => {
+  // const account = get(stacksSessionAtom);
+  const privateKey = get(privateKeyState);
+  if (!privateKey) return null;
+  const config = await generateGaiaHubConfigSync({
+    privateKey,
+    gaiaHubUrl: 'https://hub.hiro.so',
+  });
+  return config;
+});
+
 export const SWAP_STORAGE_PREFIX = `swaps-${NETWORK_CONFIG}-${APP_VERSION}/`;
 export const INBOUND_SWAP_STORAGE_PREFIX = 'inbounds';
 export const OUTBOUND_SWAP_STORAGE_PREFIX = 'outbounds';
@@ -173,7 +185,7 @@ export function inboundSwapKey(id: string) {
 export const inboundSwapState = atomFamilyWithQuery<string, InboundSwap>(
   (get, param) => [QueryKeys.INBOUND_SWAPS, param],
   async (get, param) => {
-    const config = get(primaryGaiaHubConfigAtom);
+    const config = get(gaiaHubConfigAtom);
     const privateKey = get(privateKeyState);
     if (!config || !privateKey) throw new Error('Not logged in');
     const key = inboundSwapKey(param);
@@ -204,7 +216,7 @@ export function outboundSwapKey(id: string) {
 export const outboundSwapStorageState = atomFamilyWithQuery<string, OutboundSwapStarted>(
   (get, param) => [QueryKeys.OUTBOUND_SWAPS_STORAGE, param],
   async (get, param) => {
-    const config = get(primaryGaiaHubConfigAtom);
+    const config = get(gaiaHubConfigAtom);
     const privateKey = get(privateKeyState);
     if (!config || !privateKey) throw new Error('Not logged in');
     const key = outboundSwapKey(param);
@@ -229,7 +241,7 @@ export interface SwapListItem {
 
 export const swapsListState = atomWithQuery<SwapListItem[]>(QueryKeys.SWAPS_LIST, async get => {
   const session = get(stacksSessionAtom);
-  const hubConfig = get(primaryGaiaHubConfigAtom);
+  const hubConfig = get(gaiaHubConfigAtom);
   if (!session || !hubConfig) return [];
   const _pageRequest = JSON.stringify({});
   const fetchOptions: RequestInit = {

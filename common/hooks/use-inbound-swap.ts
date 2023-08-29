@@ -2,8 +2,15 @@ import { useGaia } from '@micro-stacks/react';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo, useEffect } from 'react';
 import type { InboundSwap } from '../store/swaps';
-import { getSwapStep, inboundSwapKey, useInboundSwapStorage, useSwapId } from '../store/swaps';
+import {
+  gaiaHubConfigAtom,
+  getSwapStep,
+  inboundSwapKey,
+  useInboundSwapStorage,
+  useSwapId,
+} from '../store/swaps';
 import NProgress from 'nprogress';
+import { useAtomValue } from 'jotai';
 
 export function useInboundSwap() {
   const router = useRouter();
@@ -16,6 +23,7 @@ export function useInboundSwap() {
   const step = useMemo(() => {
     return getSwapStep(swap);
   }, [swap]);
+  const gaiaConfig = useAtomValue(gaiaHubConfigAtom);
 
   const updateSwap = useCallback(
     async (swapData: Partial<InboundSwap>) => {
@@ -26,11 +34,16 @@ export function useInboundSwap() {
         ...swapData,
       };
       setQueryData({ data: newSwap });
-      const url = await putFile(key, JSON.stringify(newSwap), { encrypt: true });
+      if (!gaiaConfig) throw new Error('Not logged in');
+      // const hubConfig = await
+      const url = await putFile(key, JSON.stringify(newSwap), {
+        encrypt: true,
+        gaiaHubConfig: gaiaConfig,
+      });
       NProgress.done();
       return url;
     },
-    [putFile, setQueryData, swap]
+    [putFile, setQueryData, swap, gaiaConfig]
   );
 
   const swapId = useMemo(() => {

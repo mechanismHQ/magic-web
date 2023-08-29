@@ -6,7 +6,7 @@ import { getTxId } from '../utils';
 import { stxTxState, useStxTxResult } from '../store/api';
 import { bytesToHex } from 'micro-stacks/common';
 import type { ContractCallTxOptions } from 'micro-stacks/connect';
-import { network } from '../constants';
+import { LOCAL_URL, getAppIcon, getAppName, network } from '../constants';
 import { useAtomCallback, useAtomValue } from 'jotai/utils';
 import type { Contracts } from '../contracts';
 import { getContracts } from '../contracts';
@@ -18,7 +18,7 @@ type Receipt<_Ok, _Err> = Awaited<ReturnType<typeof submitTx>>;
 
 type TxOptions = Omit<
   ContractCallTxOptions,
-  'contractName' | 'contractAddress' | 'functionName' | 'functionArgs' | 'privateKey'
+  'contractName' | 'contractAddress' | 'functionName' | 'functionArgs' | 'privateKey' | 'appDetails'
 >;
 
 export type Submitter<Ok, Err> = (
@@ -36,6 +36,11 @@ interface UseTxOptions {
   txidAtom?: PrimitiveAtom<string | undefined>;
 }
 
+const appDetails = {
+  appName: getAppName(),
+  appIcon: getAppIcon() || `${LOCAL_URL}/star-black.svg`,
+};
+
 export const useTx = <Ok, Err>(builder: TxBuilder<Ok, Err>, opts: UseTxOptions = {}) => {
   const [txId, setTxId] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
@@ -52,7 +57,9 @@ export const useTx = <Ok, Err>(builder: TxBuilder<Ok, Err>, opts: UseTxOptions =
         _tx,
         {
           ...opts,
-          appDetails: opts.appDetails!,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          appDetails,
           privateKey,
         },
         {

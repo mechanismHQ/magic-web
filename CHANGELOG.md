@@ -1,4 +1,4 @@
-# Magic Protocol
+# Magic Protocol Web App
 
 ## 0.5.0
 

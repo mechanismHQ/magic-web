@@ -1,11 +1,11 @@
 import { useGaia } from '@micro-stacks/react';
-import { useAtomCallback } from 'jotai/utils';
+import { useAtomCallback, useAtomValue } from 'jotai/utils';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import type { Supplier } from '../store';
 import { currentStxAddressState } from '../store';
 import { publicKeyState } from '../store';
-import { createInboundSwap, inboundSwapKey } from '../store/swaps';
+import { createInboundSwap, gaiaHubConfigAtom, inboundSwapKey } from '../store/swaps';
 
 interface Generate {
   supplier: Supplier;
@@ -17,12 +17,14 @@ export function useGenerateInboundSwap() {
   const router = useRouter();
   const testQuery = router.query.test;
 
+  const gaiaHubConfig = useAtomValue(gaiaHubConfigAtom);
+
   const generate = useAtomCallback(
     useCallback(
       async (get, set, { supplier, inputAmount }: Generate) => {
         const stxAddress = get(currentStxAddressState);
         const publicKey = get(publicKeyState);
-        if (!publicKey) throw new Error('Invalid user state');
+        if (!publicKey || !gaiaHubConfig) throw new Error('Invalid user state');
         const expiration = testQuery === 'error' ? 10 : undefined;
         if (typeof expiration === 'number') {
           console.debug('Setting invalid expiration of', expiration);
@@ -38,10 +40,10 @@ export function useGenerateInboundSwap() {
         });
         console.debug('Generated swap:', swap);
         const key = inboundSwapKey(swap.id);
-        await putFile(key, JSON.stringify(swap), { encrypt: true });
+        await putFile(key, JSON.stringify(swap), { encrypt: true, gaiaHubConfig });
         return swap;
       },
-      [putFile, testQuery]
+      [putFile, testQuery, gaiaHubConfig]
     )
   );
 
