@@ -27,6 +27,10 @@ export const stxTxState = atomFamilyWithQuery<string | undefined, Transaction | 
   async (get, txId) => {
     if (txId === undefined || !txId) return null;
     return await getTx(txId);
+  },
+  {
+    refetchInterval: 10000,
+    refetchOnWindowFocus: true,
   }
 );
 
