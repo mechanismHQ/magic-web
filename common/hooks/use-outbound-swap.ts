@@ -7,6 +7,7 @@ import { useStxTx, useListUnspent } from '../store/api';
 import { useSwapId } from '../store/swaps';
 import { getOutboundAddress } from '../utils';
 import { useRevokeOutbound } from './tx/use-revoke-outbound';
+import { useDeepMemo } from './use-deep-effect';
 
 export function useOutboundSwap(_txId?: string) {
   let txId: string;
@@ -45,11 +46,11 @@ export function useOutboundSwap(_txId?: string) {
     return getOutboundAddress(swap.output);
   }, [swap]);
   const [unspentApiResponse] = useListUnspent(btcAddress);
-  const unspent = useMemo(() => {
+  const unspent = useDeepMemo(() => {
     if (!swap || unspentApiResponse.unspents === undefined) return undefined;
     const initBurnHeight = swap.createdAt;
     return unspentApiResponse.unspents.find(unspent => {
-      const heightOk = unspent.height === 0 || BigInt(unspent.height) - initBurnHeight >= 500;
+      const heightOk = unspent.height === 0 || unspent.height >= initBurnHeight;
       const amountOk = BigInt(unspent.value) === swap.sats;
       return heightOk && amountOk;
     });

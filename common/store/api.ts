@@ -50,6 +50,9 @@ export const watchAddressState = atomFamilyWithQuery<string, WatchAddressApi>(
     const res = await fetch(url);
     const data = (await res.json()) as WatchAddressApi;
     return data;
+  },
+  {
+    refetchOnWindowFocus: true,
   }
 );
 
@@ -110,10 +113,16 @@ export const btcTxState = atomFamilyWithQuery<[string, string], TxData>(
   }
 );
 
-export const coreApiInfoState = atomWithQuery(QueryKeys.CORE_INFO, async () => {
-  const info = await fetchCoreApiInfo({ url: network.getCoreApiUrl() });
-  return info;
-});
+export const coreApiInfoState = atomWithQuery(
+  QueryKeys.CORE_INFO,
+  async () => {
+    const info = await fetchCoreApiInfo({ url: network.getCoreApiUrl() });
+    return info;
+  },
+  {
+    refetchOnWindowFocus: true,
+  }
+);
 
 export type SupplierWithCapacity = Supplier & { btc: string; btcAddress: string };
 

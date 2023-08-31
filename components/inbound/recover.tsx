@@ -13,6 +13,7 @@ import { MagicInput } from '../form';
 import { useWaitTime } from '../../common/hooks/use-wait-time';
 import { useDeepMemo } from '../../common/hooks/use-deep-effect';
 import { loadable } from 'jotai/utils';
+import { fullInboundState } from '../../common/store/swaps';
 
 export const SwapRedeem: React.FC = () => {
   const { swap } = useInboundSwap();
@@ -21,7 +22,7 @@ export const SwapRedeem: React.FC = () => {
   const [btcTx] = useBtcTx(swap.btcTxid, swap.address);
   const [coreInfo] = useCoreApiInfo();
   const btcAddress = useInput(useAtom(btcAddressState));
-  const { submit, txid } = useRecoverSwap();
+  const { submit, txid, broadcastErr } = useRecoverSwap();
   // preload
   useAtomValue(loadable(btcFeesState));
 
@@ -29,12 +30,21 @@ export const SwapRedeem: React.FC = () => {
     await submit();
   }, [submit]);
 
+  const fullInbound = useAtomValue(loadable(fullInboundState(swap.btcTxid)));
+
+  // HTLC expiration info
   const confirmBlock = btcTx.burnHeight;
   const currentBlock = coreInfo.burn_block_height;
   const waitBlocks = confirmBlock - currentBlock + swap.expiration;
-  const isExpired = waitBlocks <= 0;
-
+  const htlcIsExpired = waitBlocks <= 0;
   const waitTime = useWaitTime(waitBlocks);
+
+  // swap expiration info
+  const swapIsExpired = useDeepMemo(() => {
+    if (fullInbound.state !== 'hasData' || fullInbound.data === null) return false;
+    const { expiration } = fullInbound.data;
+    return expiration <= BigInt(coreInfo.stacks_tip_height);
+  }, [fullInbound, coreInfo.stacks_tip_height]);
 
   const isFailed = useDeepMemo(() => {
     if (escrowTx === null) return false;
@@ -43,14 +53,14 @@ export const SwapRedeem: React.FC = () => {
     return true;
   }, [escrowTx]);
 
-  if (!isFailed && !isExpired) return null;
+  if (!isFailed && !htlcIsExpired && !swapIsExpired) return null;
   if ('recoveryTxid' in swap) return null;
 
   return (
     <Alert>
       <Stack spacing="20px">
         <AlertHeader>Recover your BTC</AlertHeader>
-        {isExpired ? (
+        {htlcIsExpired ? (
           <>
             <Stack spacing="8px">
               <AlertText>You can now safely withdraw your BTC from escrow.</AlertText>
@@ -66,6 +76,21 @@ export const SwapRedeem: React.FC = () => {
                     Continue
                   </StatusButton>
                 </Box>
+                {broadcastErr && (
+                  <>
+                    <AlertText>There was an error broadcasting the transaction:</AlertText>
+                    <AlertText>
+                      <Text
+                        wordWrap={'break-word'}
+                        variant="Caption02"
+                        color="$alert-red"
+                        fontFamily={'monospace'}
+                      >
+                        {broadcastErr}
+                      </Text>
+                    </AlertText>
+                  </>
+                )}
               </Stack>
             )}
           </>

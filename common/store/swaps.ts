@@ -5,7 +5,7 @@ import { bytesToHex, hexToBytes } from 'micro-stacks/common';
 import { getRandomBytes } from 'micro-stacks/crypto';
 import { hashSha256 } from 'micro-stacks/crypto-sha';
 import { getFile } from 'micro-stacks/storage';
-import { generateHTLCAddress } from '../htlc';
+import { generateHTLCAddress, generateHTLCScript } from '../htlc';
 import type { Supplier } from './index';
 import {
   QueryKeys,
@@ -163,6 +163,23 @@ export function createReadySwap(swap: InboundSwapStarted): InboundSwapReady {
   };
 }
 
+export function getSwapRedeemScript(swap: InboundSwapStarted) {
+  const { secret, publicKey, supplier } = swap;
+  const hash = hashSha256(hexToBytes(secret));
+  const metadata = generateMetadataHash({
+    swapperAddress: swap.swapper,
+    feeRate: swap.feeRate,
+    baseFee: swap.baseFee,
+  });
+  return generateHTLCScript({
+    senderPublicKey: Buffer.from(publicKey, 'hex'),
+    recipientPublicKey: Buffer.from(supplier.publicKey, 'hex'),
+    metadata,
+    hash: Buffer.from(hash),
+    expiration: BigInt(swap.expiration),
+  });
+}
+
 export const gaiaHubConfigAtom = atom(async get => {
   // const account = get(stacksSessionAtom);
   const privateKey = get(privateKeyState);
@@ -309,8 +326,15 @@ export const fullOutboundSwapState = atomFamilyWithQuery<string, FullOutboundSwa
 export const fullInboundState = atomFamilyWithQuery<string, InboundSwapFull | null>(
   (get, swapTxid) => ['INBOUND_SWAP_FULL', swapTxid],
   async (get, swapTxid) => {
-    const swap = await fetchFullInboundSwap(swapTxid);
-    return swap;
+    try {
+      const swap = await fetchFullInboundSwap(swapTxid);
+      return swap;
+    } catch (error) {
+      return null;
+    }
+  },
+  {
+    refetchOnWindowFocus: true,
   }
 );
 

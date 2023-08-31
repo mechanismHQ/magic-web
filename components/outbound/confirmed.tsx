@@ -72,7 +72,7 @@ const SwapBtcPending: React.FC<{ txid?: string }> = ({ txid }) => {
 };
 
 export const SwapConfirmed: React.FC = () => {
-  const { initTx, swap, btcTxId, unspent } = useOutboundSwap();
+  const { initTx, swap, btcTxId } = useOutboundSwap();
 
   if (!swap) return null;
 
@@ -81,7 +81,7 @@ export const SwapConfirmed: React.FC = () => {
       <CenterBox noPadding>
         <DoneRow txId={initTx?.tx_id}>xBTC escrowed</DoneRow>
         <Divider />
-        {unspent?.height === 0 ? (
+        {btcTxId ? (
           <SwapBtcPending txid={btcTxId} />
         ) : (
           <>

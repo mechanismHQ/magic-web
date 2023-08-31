@@ -61,8 +61,8 @@ dependencies:
     specifier: ^1.1.1
     version: 1.1.1
   '@scure/btc-signer':
-    specifier: ^1.0.0
-    version: 1.0.0
+    specifier: ^1.0.1
+    version: 1.0.1
   '@sinclair/typebox':
     specifier: ^0.20.5
     version: 0.20.5
@@ -130,8 +130,8 @@ dependencies:
     specifier: ^4.17.21
     version: 4.17.21
   magic-protocol:
-    specifier: 2.0.0
-    version: 2.0.0
+    specifier: 2.0.1
+    version: 2.0.1
   micro-stacks:
     specifier: 1.2.1
     version: 1.2.1
@@ -1808,7 +1808,7 @@ packages:
   /@radix-ui/popper@0.1.0:
     resolution: {integrity: sha512-uzYeElL3w7SeNMuQpXiFlBhTT+JyaNMCwDfjKkrzugEcYrf5n52PHqncNdQPUtR42hJh8V9FsqyEDbDxkeNjJQ==}
     dependencies:
-      '@babel/runtime': 7.17.7
+      '@babel/runtime': 7.22.11
       csstype: 3.0.9
     dev: false
 
@@ -1863,7 +1863,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0
     dependencies:
-      '@babel/runtime': 7.17.7
+      '@babel/runtime': 7.22.11
       '@radix-ui/react-primitive': 0.1.1(react@17.0.2)
       react: 17.0.2
     dev: false
@@ -2510,7 +2510,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0
     dependencies:
-      '@babel/runtime': 7.17.7
+      '@babel/runtime': 7.22.11
       '@radix-ui/react-use-layout-effect': 0.1.0(react@17.0.2)
       react: 17.0.2
     dev: false
@@ -2673,7 +2673,7 @@ packages:
   /@radix-ui/rect@0.1.1:
     resolution: {integrity: sha512-g3hnE/UcOg7REdewduRPAK88EPuLZtaq7sA9ouu8S+YEtnyFRI16jgv6GZYe3VMoQLL1T171ebmEPtDjyxWLzw==}
     dependencies:
-      '@babel/runtime': 7.17.7
+      '@babel/runtime': 7.22.11
     dev: false
 
   /@radix-ui/rect@1.0.0:
@@ -2690,8 +2690,8 @@ packages:
     resolution: {integrity: sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==}
     dev: false
 
-  /@scure/btc-signer@1.0.0:
-    resolution: {integrity: sha512-xBMV/QPWz5BxWQye4DU7133fo9qTgkAcf1RBMSe2zQZHPfpYI1BiC0ITFtHyUbPZvZi0xvstFcXSOW+eKoj/og==}
+  /@scure/btc-signer@1.0.1:
+    resolution: {integrity: sha512-sPGK7p+qHJSIs6zyzTjXCdt5mizEMelaYC3JPJGr1+NfVdYFfcRxGf9h4QfNVngHIHFSn39fzJhTBa5LSNpA4w==}
     dependencies:
       '@noble/curves': 1.0.0
       '@noble/hashes': 1.3.0
@@ -6459,13 +6459,13 @@ packages:
     dependencies:
       yallist: 4.0.0
 
-  /magic-protocol@2.0.0:
-    resolution: {integrity: sha512-4F88Pkebajt9A+Mns9bmqkDfTGDHVFLih0oBbWL4oBHo9Q/PgXkdxrlDoA9aUIrYD1CsNSTRGTY3w4b8JRrVsA==}
+  /magic-protocol@2.0.1:
+    resolution: {integrity: sha512-b3V2SLQDKme82htMEEtf8C9xZDErrahFBg687BTuAWLKsCCra2Dvtl+4yHZou6V73ILhMYedis/RFTsPN590XA==}
     dependencies:
       '@changesets/cli': 2.26.2
       '@noble/hashes': 1.3.0
       '@scure/base': 1.1.1
-      '@scure/btc-signer': 1.0.0
+      '@scure/btc-signer': 1.0.1
       micro-packed: 0.3.2
       micro-stacks: 1.2.1
     transitivePeerDependencies:

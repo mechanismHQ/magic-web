@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { hexToBytes } from 'micro-stacks/common';
 import { broadcastBtc } from '../api';
 import { useAtomCallback, useAtomValue } from 'jotai/utils';
@@ -6,28 +6,30 @@ import { stacksSessionAtom } from '@micro-stacks/react';
 import { btcAddressState } from '../store';
 import { useInboundSwap } from './use-inbound-swap';
 import { encodeHtlcOutput } from 'magic-protocol';
-import { fullInboundState } from '../store/swaps';
+import { getSwapRedeemScript } from '../store/swaps';
 import { Transaction } from '@scure/btc-signer';
 import { atom } from 'jotai';
+import { btcNetwork } from '../constants';
+import { btcTxState } from '../store/api';
 
 const recoverTxidAtom = atom('');
 
 export function useRecoverSwap() {
   const { swap: storageSwap, updateSwap } = useInboundSwap();
-  if (!('escrowTxid' in storageSwap)) throw new Error('Invalid swap state');
+  if (!('btcTxid' in storageSwap)) throw new Error('Invalid swap state');
   const txid = useAtomValue(recoverTxidAtom);
+  const [broadcastErr, setBroadcastErr] = useState('');
 
   const submit = useAtomCallback(
     useCallback(
       async (get, set) => {
-        const swap = get(fullInboundState(storageSwap.btcTxid));
-        if (swap === null) {
-          console.debug(`Swap with txid ${storageSwap.btcTxid} not found`);
-          return;
-        }
-        const witnessScript = swap.redeemScript;
+        const { btcTxid } = storageSwap;
+        setBroadcastErr('');
+        const redeemScript = getSwapRedeemScript(storageSwap);
+        const witnessScript = redeemScript;
         const btcAddress = get(btcAddressState);
         const htlcOutput = encodeHtlcOutput(witnessScript);
+        const btcTx = get(btcTxState([storageSwap.btcTxid, storageSwap.address]));
         const feeRate = 10;
         const recipient = btcAddress;
         const weight = 350;
@@ -41,34 +43,41 @@ export function useRecoverSwap() {
         const tx = new Transaction({ allowUnknowInput: true });
 
         tx.addInput({
-          txid: swap.hash,
-          index: Number(swap.outputIndex),
+          txid: btcTxid,
+          index: Number(btcTx.outputIndex),
           witnessUtxo: {
             script: htlcOutput,
-            amount: swap.sats,
+            amount: btcTx.amount,
           },
+          sequence: storageSwap.expiration,
           witnessScript,
         });
 
-        tx.addOutput({
-          script: recipient,
-          amount: swap.sats - fee,
-        });
+        tx.addOutputAddress(recipient, btcTx.amount - fee, btcNetwork);
 
         tx.sign(hexToBytes(privateKey));
 
         const input = tx.getInput(0)!;
         const partial = input.partialSig!;
-        input.finalScriptWitness = [partial[0][1], new Uint8Array([0]), witnessScript];
+        input.finalScriptWitness = [partial[0][1], new Uint8Array([]), witnessScript];
         tx.updateInput(0, input);
+        // console.log(`btcdeb --tx=${tx.hex} --txin=${bytesToHex(btcTx.txHex)}`);
 
-        tx.finalize();
-        const broadcastId = await broadcastBtc(tx.hex);
-        set(recoverTxidAtom, broadcastId);
-        void updateSwap({
-          ...storageSwap,
-          recoveryTxid: broadcastId,
-        });
+        try {
+          const broadcastId = await broadcastBtc(tx.hex);
+          set(recoverTxidAtom, broadcastId);
+          void updateSwap({
+            ...storageSwap,
+            recoveryTxid: broadcastId,
+          });
+        } catch (error) {
+          console.error(error);
+          let msg = 'Error broadcasting transaction';
+          if (error instanceof Error) {
+            msg = error.message;
+          }
+          setBroadcastErr(msg);
+        }
       },
       [storageSwap, updateSwap]
     )
@@ -77,5 +86,6 @@ export function useRecoverSwap() {
   return {
     submit,
     txid,
+    broadcastErr,
   };
 }

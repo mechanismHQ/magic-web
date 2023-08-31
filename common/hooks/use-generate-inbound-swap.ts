@@ -17,6 +17,8 @@ export function useGenerateInboundSwap() {
   const router = useRouter();
   const testQuery = router.query.test;
 
+  console.log('testQuery', testQuery);
+
   const gaiaHubConfig = useAtomValue(gaiaHubConfigAtom);
 
   const generate = useAtomCallback(
@@ -25,7 +27,7 @@ export function useGenerateInboundSwap() {
         const stxAddress = get(currentStxAddressState);
         const publicKey = get(publicKeyState);
         if (!publicKey || !gaiaHubConfig) throw new Error('Invalid user state');
-        const expiration = testQuery === 'error' ? 10 : undefined;
+        const expiration = testQuery === 'error' ? 3 : undefined;
         if (typeof expiration === 'number') {
           console.debug('Setting invalid expiration of', expiration);
         }
