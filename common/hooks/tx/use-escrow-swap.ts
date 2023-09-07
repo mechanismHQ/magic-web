@@ -7,6 +7,7 @@ import type { InboundSwapSent } from '../../store/swaps';
 import { useTx } from '../use-tx';
 import { encodeExpiration } from 'magic-protocol';
 import { currentStxAddressState } from '../../store';
+import { CompactSize } from '@scure/btc-signer';
 
 export const useEscrowSwap = (swap: InboundSwapSent) => {
   const { btcTxid, secret, supplier, address, feeRate, baseFee } = swap;
@@ -17,7 +18,10 @@ export const useEscrowSwap = (swap: InboundSwapSent) => {
     if (!publicKey) throw new Error('Not logged in');
     const txData = await fetchTxData(btcTxid, address);
     const hash = hashSha256(hexToBytes(secret));
-    const expiration = encodeExpiration(BigInt(swap.expiration));
+    let expiration = encodeExpiration(BigInt(swap.expiration));
+    if (typeof expiration === 'number') {
+      expiration = CompactSize.encode(BigInt(expiration));
+    }
     const escrowTx = contracts.magic.escrowSwap({
       block: txData.block,
       prevBlocks: txData.prevBlocks,
