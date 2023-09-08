@@ -2,13 +2,15 @@ services:
   - name: bridge-app
     type: pserv
     env: node
-    buildCommand: NODE_ENV=development yarn && NODE_ENV=production yarn build
-    startCommand: yarn start
+    buildCommand: NODE_ENV=development pnpm install && NODE_ENV=production pnpm build
+    startCommand: pnpm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_NETWORK
         sync: false
+      - key: NODE_VERSION
+        value: 18.17.1
 
   - name: nginx
     dockerfilePath: ./nginx/nginx.Dockerfile
