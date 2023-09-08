@@ -62,6 +62,8 @@ export function useOutboundSwap(_txId?: string) {
 
   const { revokeTxid, submitRevoke } = useRevokeOutbound(swapId, swap?.xbtc);
 
+  const btcConfirmed = unspent && unspent?.height !== 0;
+
   return {
     initTx,
     initStatus,
@@ -71,7 +73,8 @@ export function useOutboundSwap(_txId?: string) {
     finalizeTxid,
     txId,
     unspent,
-    btcConfirmed: unspent && unspent?.height !== 0,
+    btcConfirmed,
+    isFinished: btcConfirmed || finalizeTxid !== null,
     btcTxId: finalizeTxid || unspent?.tx_hash,
     submitRevoke,
     revokeTxid,
