@@ -71,6 +71,7 @@ export function useOutboundSwap(_txId?: string) {
     finalizeTxid,
     txId,
     unspent,
+    btcConfirmed: unspent && unspent?.height !== 0,
     btcTxId: finalizeTxid || unspent?.tx_hash,
     submitRevoke,
     revokeTxid,
