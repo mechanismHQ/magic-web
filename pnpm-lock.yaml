@@ -130,8 +130,8 @@ dependencies:
     specifier: ^4.17.21
     version: 4.17.21
   magic-protocol:
-    specifier: 2.0.1
-    version: 2.0.1
+    specifier: 2.3.0
+    version: 2.3.0
   micro-stacks:
     specifier: 1.2.1
     version: 1.2.1
@@ -6459,8 +6459,8 @@ packages:
     dependencies:
       yallist: 4.0.0
 
-  /magic-protocol@2.0.1:
-    resolution: {integrity: sha512-b3V2SLQDKme82htMEEtf8C9xZDErrahFBg687BTuAWLKsCCra2Dvtl+4yHZou6V73ILhMYedis/RFTsPN590XA==}
+  /magic-protocol@2.3.0:
+    resolution: {integrity: sha512-odiArkVEe/IfglsyAzyMXr8yjpRjcNtGylLaenHfXgfWqXK2gYpwE+9i7TMB7vdaBsbIw4MLbkGp1J6flQxv8g==}
     dependencies:
       '@changesets/cli': 2.26.2
       '@noble/hashes': 1.3.0
