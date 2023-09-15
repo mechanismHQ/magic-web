@@ -19,7 +19,7 @@ export function useRevokeOutbound(swapId: bigint | null, xbtc?: bigint) {
     const tx = contracts.magic.revokeExpiredOutbound(swapId);
     const postCondition = makeContractFungiblePostCondition(
       bridgeAddress(),
-      'bridge',
+      'magic',
       FungibleConditionCode.LessEqual,
       xbtc,
       xbtcAssetInfo()
